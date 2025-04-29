@@ -1,2 +1,2 @@
-# YucaMedia Website
+YucaMedia Website
 Project setup for YucaMedia Website.
