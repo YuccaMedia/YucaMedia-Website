@@ -1,0 +1,56 @@
+/* Define color scheme using CSS Custom Properties (Variables) */
+:root {
+  --color-bg-dark-green: #1a2b21;
+  --color-text-silver: #c2c8c4;
+}
+
+body {
+  background-color: var(--color-bg-dark-green);
+  color: var(--color-text-silver);
+  font-family: sans-serif; /* Basic default font */
+  margin: 0; /* Remove default body margin */
+}
+
+/* Basic header styling using variables (replaces Tailwind classes) */
+header {
+  /* background-color: var(--color-bg-dark-green); /* Already set on body */
+  color: var(--color-text-silver);
+  padding: 1rem; /* Equivalent to p-4 */
+}
+
+/* Basic nav list styling */
+header nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex; /* Arrange items horizontally */
+  gap: 1.5rem; /* Space between nav items */
+}
+
+header nav a {
+  color: var(--color-text-silver);
+  text-decoration: none;  font-size: 1.125rem; /* Equivalent to text-lg */
+  font-weight: 700; /* Equivalent to font-bold */
+}
+
+header nav a:hover {  opacity: 0.8; /* Simple hover effect */
+}
+
+/* Style for the SVG container */.landing-graphic-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.landing-graphic-container svg {
+  width: 90%; /* Make it take up slightly more percentage width on smaller screens */
+  max-width: 800px; /* Increase the maximum absolute size significantly */
+  /* height: auto; */ /* Keep commented out or remove */
+  /* Calculate height based on width and viewBox ratio (500/400 = 1.25) */
+  /* Use min() to respect max-width. Use vw for viewport width percentage */
+  height: calc(min(90vw, 800px) * 1.25);
+  min-height: 500px; /* Ensure it's at least tall enough for the viewBox */
+  display: inline-block; /* Ensure it respects text-align: center */
+}
+  max-width: 600px; 
+  height: auto;
+}

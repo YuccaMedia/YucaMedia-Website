@@ -2,20 +2,33 @@
 
 
  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yuca Media</title>
+  <link rel="stylesheet" href="styles/main.css"> <!-- Link the new CSS file --></head>
+<body> <!-- Added missing body tag -->
+ 
 <!-- Removed Canvas and Three.js Script -->
 
-<header class="bg-gray-900 text-white p-4">
+<header> <!-- Removed Tailwind classes -->
   <nav>
     <ul>
+
       <li>
 
 
-        <a href="#" class="text-lg font-bold">
-          <img src="assets/yuca-media-logo (2).png" alt="YucaMedia_Website Logo"> <!-- Removed width and height attributes -->
+
+        <a href="#"> <!-- Removed Tailwind classes -->
+          <!-- Removed PNG logo -->
           YucaMedia_Website
         </a>
+
       </li>
-      <li><a href="components/dashboard.html" class="text-lg font-bold">Dashboard</a></li>
+      <li><a href="components/dashboard.html">Dashboard</a></li> <!-- Removed Tailwind classes -->
 
     </ul>
   </nav>
@@ -23,7 +36,8 @@
 
 <!-- Landing Page SVG Graphic -->
 <div class="landing-graphic-container" style="text-align: center; padding: 2rem;"> <!-- Added a container div for styling/positioning -->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="80%" style="max-width: 600px; height: auto;"> <!-- Added width/style for basic scaling -->
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"> <!-- Removed inline width/style, rely on CSS -->
     <!-- Dark green background circle -->
     <circle cx="200" cy="200" r="180" fill="#1a2b21" />
     
