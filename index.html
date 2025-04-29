@@ -1,7 +1,9 @@
 
 
- <canvas id="canvas"></canvas>
-<script src="scripts/three.js"></script>
+
+ 
+<!-- Removed Canvas and Three.js Script -->
+
 <header class="bg-gray-900 text-white p-4">
   <nav>
     <ul>
@@ -14,6 +16,131 @@
         </a>
       </li>
       <li><a href="components/dashboard.html" class="text-lg font-bold">Dashboard</a></li>
+
     </ul>
   </nav>
 </header>
+
+<!-- Landing Page SVG Graphic -->
+<div class="landing-graphic-container" style="text-align: center; padding: 2rem;"> <!-- Added a container div for styling/positioning -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="80%" style="max-width: 600px; height: auto;"> <!-- Added width/style for basic scaling -->
+    <!-- Dark green background circle -->
+    <circle cx="200" cy="200" r="180" fill="#1a2b21" />
+    
+    <!-- Light gray/silver outer circle -->
+    <circle cx="200" cy="200" r="170" fill="none" stroke="#c2c8c4" stroke-width="4" />
+    
+    <!-- Animated hexagon dots - FURTHER ENLARGED HEXAGON SHAPE -->
+    <g id="hexagonDots">      <!-- Top row -->
+      <circle cx="200" cy="45" r="3" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" repeatCount="indefinite" />
+      </circle>
+      <!-- Top-right dots -->
+      <circle cx="310" cy="100" r="3" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.5s" repeatCount="indefinite" />
+      </circle>
+      <!-- Bottom-right dots -->
+      <circle cx="310" cy="300" r="3" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1s" repeatCount="indefinite" />
+      </circle>
+      <!-- Bottom dots -->
+      <circle cx="200" cy="355" r="3" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.5s" repeatCount="indefinite" />
+      </circle>
+      <!-- Bottom-left dots -->
+      <circle cx="90" cy="300" r="3" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2s" repeatCount="indefinite" />
+      </circle>
+      <!-- Top-left dots -->
+      <circle cx="90" cy="100" r="3" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.5s" repeatCount="indefinite" />
+      </circle>
+      
+      <!-- Additional dots to fill in the hexagon pattern -->
+      <circle cx="255" cy="70" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.25s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="145" cy="70" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.75s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="340" cy="150" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.75s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="340" cy="250" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.25s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="255" cy="330" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.75s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="145" cy="330" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.25s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="60" cy="250" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.25s" repeatCount="indefinite" />
+      </circle>      <circle cx="60" cy="150" r="2.5" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.75s" repeatCount="indefinite" />      </circle>
+      
+      <!-- Extra dots for a fuller hexagon effect -->
+      <circle cx="290" cy="200" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="110" cy="200" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="325" cy="165" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.8s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="325" cy="235" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="75" cy="165" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="75" cy="235" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.8s" repeatCount="indefinite" />
+      </circle>
+      
+      <!-- Additional corner dots for enhanced hexagon definition -->
+      <circle cx="280" cy="95" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="280" cy="305" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.4s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="120" cy="305" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.9s" repeatCount="indefinite" />
+      </circle>      <circle cx="120" cy="95" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.6s" repeatCount="indefinite" />
+      </circle>
+      
+      <!-- Additional points to fill gaps in larger hexagon -->
+      <circle cx="230" cy="55" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.15s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="170" cy="55" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.85s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="230" cy="345" r="2" fill="#c2c8c4">        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.65s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="170" cy="345" r="2" fill="#c2c8c4">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.35s" repeatCount="indefinite" />
+      </circle>
+    </g>
+    
+    <!-- Properly oriented Y with connected roots -->
+    <!-- Y upper part -->    <path d="M160 100 L200 160 L240 100" fill="none" stroke="#c2c8c4" stroke-width="8" stroke-linecap="round" />
+    <!-- Y stem -->
+    <path d="M200 160 L200 220" fill="none" stroke="#c2c8c4" stroke-width="8" stroke-linecap="round" />
+    
+    <!-- Root system connected to Y -->
+    <path d="M200 220 L200 260" fill="none" stroke="#c2c8c4" stroke-width="6" stroke-linecap="round" />
+    <path d="M200 260 L170 290" fill="none" stroke="#c2c8c4" stroke-width="4" stroke-linecap="round" />
+    <path d="M200 260 L230 290" fill="none" stroke="#c2c8c4" stroke-width="4" stroke-linecap="round" />    <path d="M170 290 L150 315" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+    <path d="M170 290 L175 320" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+    <path d="M230 290 L225 320" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+    <path d="M230 290 L250 315" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+    <path d="M150 315 L140 330" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+    <path d="M150 315 L155 335" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+    <path d="M175 320 L165 340" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+    <path d="M175 320 L190 340" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+    <path d="M225 320 L210 340" fill="none" stroke="#c2c8c4" stroke-width="
