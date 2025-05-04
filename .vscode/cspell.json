@@ -10,7 +10,8 @@
     "blockchain",
     "webp",
     "importmap",
-    "drei"
+    "drei",
+    "Metaverse"
   ],
   "ignorePaths": [
     "node_modules",
