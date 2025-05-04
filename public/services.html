@@ -577,8 +577,16 @@
     </footer>
     
     <!-- JavaScript -->
+    <!-- Set up proper Solana blockchain integration JavaScript -->
     <script src="services.js"></script>
     <script src="audio-solution.js"></script>
+    <script>
+        console.log("Services page loaded successfully");
+        // For debugging purposes
+        window.addEventListener('error', function(e) {
+            console.error('Script error:', e.message, 'in', e.filename, 'line:', e.lineno);
+        });
+    </script>
     
     <!-- Floating icons -->
     <div class="float-container" style="top: 25%; left: 5%;">
