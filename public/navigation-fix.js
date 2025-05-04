@@ -13,18 +13,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (servicesLink) {
         console.log('Services link found, adding enhanced click handler');
         
-        // Replace the onclick with a more robust version
+        // Create a new simple button next to the services link
+        const servicesButton = document.createElement('button');
+        servicesButton.textContent = 'Services';
+        servicesButton.className = 'hover:text-[#c2c8c4] transition-colors ml-1';
+        servicesButton.style.background = 'none';
+        servicesButton.style.border = 'none';
+        servicesButton.style.color = 'white';
+        servicesButton.style.cursor = 'pointer';
+        servicesButton.style.fontFamily = 'inherit';
+        servicesButton.style.fontSize = 'inherit';
+        servicesButton.style.padding = '0';
+        
+        servicesButton.onclick = function() {
+            console.log('Services button clicked - direct navigation');
+            // Direct navigation with no delay or preventDefault
+            window.location.href = '/public/services.html';
+        };
+        
+        // Insert the button after the link
+        servicesLink.parentNode.insertBefore(servicesButton, servicesLink.nextSibling);
+        
+        // Keep the original link but with console debugging
         servicesLink.onclick = function(e) {
-            e.preventDefault(); // Prevent default link behavior
-            console.log('Services link clicked with enhanced handler');
-            
-            // Try multiple navigation methods in sequence
-            setTimeout(function() {
-                console.log('Navigating to services page');
-                window.location.href = '/public/services.html';
-            }, 100);
-            
-            return false; // Prevent default and stop propagation
+            console.log('Original services link clicked');
+            console.log('Link href:', servicesLink.href);
+            console.log('Attempting navigation...');
         };
         
         console.log('Enhanced click handler added to services link');
