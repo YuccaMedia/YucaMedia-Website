@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuca Media - Rooted in Innovation. Built for the Future.</title>
+    
+    <!-- Font preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="full-landing.js" defer></script>
+    
+    <style>
+        :root {
+            --primary-dark: #1a2b21;
+            --primary-light: #c2c8c4;
+            --bg-light: #f5f8f6;
+            --text-main: #c2c8c4;
+            --text-dark: #283c31;
+            --accent: #7ea389;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: var(--primary-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+        }
+        
+        h2 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            margin-bottom: 1.5rem;
+        }
+        
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            margin-bottom: 1.25rem;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            font-size: clamp(1rem, 1.5vw, 1.25rem);
+            max-width: 800px;
+        }
+        
+        .hero {
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo-container {
+            width: 400px;
+            height: 500px;
+            margin: 0 auto 2rem;
+        }
+        
+        .button-3d {
+            position: relative;
+            padding: 20px 30px;
+            margin: 30px 0;
+            background: rgba(194, 200, 196, 0.1);
+            border: 2px solid var(--primary-light);
+            border-radius: 15px;
+            color: var(--primary-light);
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .button-3d:hover {
+            transform: translateY(-6px) rotateX(10deg);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .section-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .donation-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .donation-button {
+            padding: 15px 20px;
+            background: rgba(194, 200, 196, 0.1);
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
+            color: var(--primary-light);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .donation-button:hover {
+            background: rgba(194, 200, 196, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .features-list {
+            list-style-type: none;
+            margin: 30px 0;
+        }
+        
+        .features-list li {
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 35px;
+            font-size: 1.1rem;
+        }
+        
+        .features-list li:before {
+            content: "•";
+            color: var(--accent);
+            font-size: 1.5rem;
+            position: absolute;
+            left: 10px;
+            top: -2px;
+        }
+        
+        .hidden-section {
+            display: none;
+            padding: 40px 0;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .nav-dots {
+            position: fixed;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(194, 200, 196, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-dot.active {
+            background-color: var(--primary-light);
+            transform: scale(1.3);
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+        }
+        
+        .scroll-down span {
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .scroll-arrow {
+            width: 20px;
+            height: 20px;
+            border-left: 2px solid var(--primary-light);
+            border-bottom: 2px solid var(--primary-light);
+            transform: rotate(-45deg);
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-10px) translateX(-50%); }
+            60% { transform: translateY(-5px) translateX(-50%); }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-dots {
+                display: none;
+            }
+            
+            .logo-container {
+                width: 300px;
+                height: 375px;
+            }
+            
+            .donation-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .donation-button {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-dots">
+        <div class="nav-dot active" data-section="hero"></div>
+        <div class="nav-dot" data-section="who-we-are"></div>
+        <div class="nav-dot" data-section="why-we-exist"></div>
+        <div class="nav-dot" data-section="crypto-lottery"></div>
+        <div class="nav-dot" data-section="yuca-studios"></div>
+        <div class="nav-dot" data-section="what-we-stand-for"></div>
+        <div class="nav-dot" data-section="lets-build"></div>
+    </div>
+    
+    <section id="hero" class="hero">
+        <div class="container">
+            <div class="logo-container">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500">
+                    <!-- Dark green background circle -->
+                    <circle cx="200" cy="200" r="180" fill="#1a2b21" />
+                    
+                    <!-- Light gray/silver outer circle -->
+                    <circle cx="200" cy="200" r="170" fill="none" stroke="#c2c8c4" stroke-width="4" />
+                    
+                    <!-- Animated hexagon dots - FURTHER ENLARGED HEXAGON SHAPE -->
+                    <g id="hexagonDots">
+                        <!-- Top row -->
+                        <circle cx="200" cy="45" r="3" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <!-- Top-right dots -->
+                        <circle cx="310" cy="100" r="3" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.5s" repeatCount="indefinite" />
+                        </circle>
+                        <!-- Bottom-right dots -->
+                        <circle cx="310" cy="300" r="3" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1s" repeatCount="indefinite" />
+                        </circle>
+                        <!-- Bottom dots -->
+                        <circle cx="200" cy="355" r="3" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.5s" repeatCount="indefinite" />
+                        </circle>
+                        <!-- Bottom-left dots -->
+                        <circle cx="90" cy="300" r="3" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2s" repeatCount="indefinite" />
+                        </circle>
+                        <!-- Top-left dots -->
+                        <circle cx="90" cy="100" r="3" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.5s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <!-- Additional dots to fill in the hexagon pattern -->
+                        <circle cx="255" cy="70" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.25s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="145" cy="70" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.75s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="340" cy="150" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.75s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="340" cy="250" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.25s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="255" cy="330" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.75s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="145" cy="330" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.25s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="60" cy="250" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.25s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="60" cy="150" r="2.5" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.75s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <!-- Extra dots for a fuller hexagon effect -->
+                        <circle cx="290" cy="200" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="110" cy="200" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="325" cy="165" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.8s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="325" cy="235" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.2s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="75" cy="165" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.2s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="75" cy="235" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.8s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <!-- Additional corner dots for enhanced hexagon definition -->
+                        <circle cx="280" cy="95" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="280" cy="305" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="120" cy="305" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.9s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="120" cy="95" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.6s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <!-- Additional points to fill gaps in larger hexagon -->
+                        <circle cx="230" cy="55" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.15s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="170" cy="55" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.85s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="230" cy="345" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.65s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="170" cy="345" r="2" fill="#c2c8c4">
+                        <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.35s" repeatCount="indefinite" />
+                        </circle>
+                    </g>
+                    
+                    <!-- Properly oriented Y with connected roots -->
+                    <!-- Y upper part -->
+                    <path d="M160 100 L200 160 L240 100" fill="none" stroke="#c2c8c4" stroke-width="8" stroke-linecap="round" />
+                    <!-- Y stem -->
+                    <path d="M200 160 L200 220" fill="none" stroke="#c2c8c4" stroke-width="8" stroke-linecap="round" />
+                    
+                    <!-- Root system connected to Y -->
+                    <path d="M200 220 L200 260" fill="none" stroke="#c2c8c4" stroke-width="6" stroke-linecap="round" />
+                    <path d="M200 260 L170 290" fill="none" stroke="#c2c8c4" stroke-width="4" stroke-linecap="round" />
+                    <path d="M200 260 L230 290" fill="none" stroke="#c2c8c4" stroke-width="4" stroke-linecap="round" />
+                    <path d="M170 290 L150 315" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+                    <path d="M170 290 L175 320" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+                    <path d="M230 290 L225 320" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+                    <path d="M230 290 L250 315" fill="none" stroke="#c2c8c4" stroke-width="3" stroke-linecap="round" />
+                    <path d="M150 315 L140 330" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    <path d="M150 315 L155 335" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    <path d="M175 320 L165 340" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    <path d="M175 320 L190 340" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    <path d="M225 320 L210 340" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    <path d="M225 320 L235 340" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    <path d="M250 315 L245 335" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    <path d="M250 315 L260 330" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
+                    
+                    <!-- Text - YUCA MEDIA (positioned below the circle) -->
+                    <text x="200" y="430" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#c2c8c4" text-anchor="middle">YUCA MEDIA</text>
+                    
+                    <!-- Tagline (positioned below the name) -->
+                    <text x="200" y="460" font-family="Arial, sans-serif" font-size="14" fill="#c2c8c4" text-anchor="middle">Rooted in Innovation. Built for the Future.</text>
+                </svg>
+            </div>
+            
+            <button class="button-3d" id="show-who-we-are">Who We Are</button>
+        </div>
+        
+        <div class="scroll-down">
+            <span>Scroll Down</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+    
+    <section id="who-we-are" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="section-inner">
+                    <h2>Who We Are</h2>
+                    <p>Yuca Media is a creative tech company reinventing how people and businesses appear in the digital world.</p>
+                    <p>We design bold, engaging websites and build future-ready platforms that don't just look good — they inspire action.</p>
+                    <p>But we're not just another web development agency. We're a movement.</p>
+                    
+                    <button class="button-3d" id="show-why-we-exist">Why We Exist</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="why-we-exist" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="section-inner">
+                    <h2>Why We Exist</h2>
+                    <p>In 2023, our founder, Tatianne Amnuar, found herself navigating major economic shifts that disrupted her businesses and her life. Faced with uncertainty, she chose reinvention — not just for herself, but for anyone who's ever had to start over.</p>
+                    <p>That choice became Yuca Media: A company rooted in resilience, powered by innovation, and built for the future.</p>
+                    <p>We believe in second chances. In people. In purpose. And we believe in using technology to create real opportunities for others.</p>
+                    
+                    <button class="button-3d" id="show-crypto-lottery">Reimagining the Odds: The Crypto Lottery DApp</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="crypto-lottery" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="section-inner">
+                    <h2>Reimagining the Odds: The Crypto Lottery DApp</h2>
+                    <p>Inspired by a personal connection with her late father — who always encouraged her to "try her luck" — Tatianne started thinking about how we define chance and opportunity in today's world.</p>
+                    <p>She discovered the odds of winning a traditional lottery are about 1 in 14 million. Even blockchain-based versions like PancakeSwap Lottery improve that only to 1 in 1 million.</p>
+                    <p>So she asked:</p>
+                    
+                    <button class="button-3d" id="show-do-better">What if we could do better?</button>
+                    
+                    <div id="do-better-content" class="hidden-section">
+                        <h3>Enter the Crypto Lottery DApp</h3>
+                        <p>Built by Yuca Media with 1 in 1 million odds of winning. But wait, that's the same as PancakeSwap Lottery. How is your CryptoLottery_Dapp be different and better? That's easy: Lower fees.</p>
+                        <p>PancakeSwap Lottery is built on the Binance Smart Chain (BSC), and the CryptoLottery_Dapp is built on the Solana Blockchain. While both offer relatively low transaction costs compared to Ethereum, Solana's fees are typically even lower, ranging from a few thousandths of a cent to a few cents per transaction.</p>
+                        <p>Players can pick 5 numbers from 1-30: C(30,5) = that's 142,506 combinations. And 1 bonus number from 1-7: 7 combinations. The Total: 142,506 × 7 = 997,542 (odds of ~1 in 997,542), bringing the odds to approximately 1 in 1 million.</p>
+                        <p>With jackpots powered by blockchain and transparent smart contracts, we are creating a lottery where people stand a chance.</p>
+                        
+                        <button class="button-3d">Explore the DApp</button>
+                        
+                        <div class="button-group" style="margin-top: 30px;">
+                            <p>We think it's cool — do you agree?</p>
+                            <button class="button-3d" style="margin-right: 15px;">Yes</button>
+                            <button class="button-3d">No</button>
+                        </div>
+                    </div>
+                    
+                    <button class="button-3d" id="show-yuca-studios" style="margin-top: 30px;">Yuca Studios</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="yuca-studios" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="section-inner">
+                    <h2>Yuca Studios: Giving Creators Their Power Back</h2>
+                    <p>As a filmmaker and actress herself, Tatianne saw another problem:</p>
+                    <p>Production is drying up. Artists are being priced out. And many creative professionals — including herself — are facing eviction or financial collapse.</p>
+                    <p>Yuca Studios is our solution.</p>
+                    <p>A blockchain-powered production studio focused on keeping films and jobs in California, while creating new pathways for independent artists and vulnerable creatives to thrive.</p>
+                    <p>This isn't just about film. It's about rebuilding an industry with community ownership, financial transparency, and tech-driven opportunity.</p>
+                    
+                    <button class="button-3d" id="show-what-we-stand-for">What We Stand For</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="what-we-stand-for" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="section-inner">
+                    <h2>What We Stand For</h2>
+                    <p>Yuca Media is more than a tech company. We're a mission-driven platform for reinvention.</p>
+                    <p>We develop apps, smart contracts, and web experiences — but anyone can do that today.</p>
+                    
+                    <button class="button-3d" id="show-vision">What sets us apart is our vision</button>
+                    
+                    <div id="vision-content" class="hidden-section">
+                        <ul class="features-list">
+                            <li>To help people believe again.</li>
+                            <li>To give businesses the tools to evolve.</li>
+                            <li>To empower creators, coders, dreamers, and doers to take their next step forward.</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="button-3d" id="show-lets-build" style="margin-top: 30px;">Let's Build a Better Future</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="lets-build" class="section">
+        <div class="container">
+            <div class="section-content">
+                <div class="section-inner">
+                    <h2>Let's Build a Better Future — Together</h2>
+                    <p>We're still in the early days. We're building, testing, pushing limits — and yes, we need help.</p>
+                    <p>Can you contribute to helping Yuca Media grow?</p>
+                    <p>Can you help us bring these ideas to life?</p>
+                    <p>Can you be a part of this story?</p>
+                    
+                    <button class="button-3d" id="show-donate">Donate. Share. Join the movement.</button>
+                    
+                    <div id="donate-content" class="hidden-section">
+                        <h3>Support Our Mission</h3>
+                        <div class="donation-buttons">
+                            <button class="donation-button">$5K Donation</button>
+                            <button class="donation-button">$10K Donation</button>
+                            <button class="donation-button">$20K Donation</button>
+                            <button class="donation-button">$50K Donation</button>
+                            <button class="donation-button">$100K Donation</button>
+                            <button class="donation-button">$500K Donation</button>
+                        </div>
+                        
+                        <div style="margin-top: 40px;">
+                            <p>If you would like to become an investor</p>
+                            <button class="button-3d">Click here and send us an email</button>
+                        </div>
+                        
+                        <div style="margin-top: 60px;">
+                            <h3>Together, we can reinvent the odds.</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

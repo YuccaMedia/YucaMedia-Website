@@ -1,3 +1,5 @@
+/* Use Tailwind CSS directives */
+/* These comments will prevent linter warnings */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

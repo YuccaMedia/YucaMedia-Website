@@ -14,14 +14,17 @@
     "start": "vite --port 8080 --open /#main-content"
   },
   "dependencies": {
+    "@react-three/drei": "^9.94.1",
+    "@react-three/fiber": "^8.15.14",
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-react": "^0.15.32",
     "@solana/wallet-adapter-react-ui": "^0.9.31",
     "@solana/wallet-adapter-wallets": "^0.19.16",
     "@solana/web3.js": "^1.77.3",
+    "gsap": "^3.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.14.0",
+    "react-router-dom": "^6.30.0",
     "three": "^0.153.0"
   },
   "devDependencies": {

@@ -1,18 +1,22 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    "./public/**/*.html", // Include all HTML files in the public folder
-    "./src/**/*.{js,jsx,ts,tsx,css}", // Include all JS, JSX, TS, TSX, and CSS files in the src folder
-    "./src/styles/**/*.css", // Include all CSS files in the styles folder
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
-      colors: {
-        darkGreen: "#1a2b21",
-        lightGray: "#c2c8c4",
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+          '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+        }
       },
+      animation: {
+        'float': 'float 8s ease-in-out infinite',
+        'float-reverse': 'float 9s ease-in-out infinite reverse',
+      }
     },
   },
   plugins: [],
-};
-
+}

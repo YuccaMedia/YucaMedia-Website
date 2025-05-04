@@ -19,13 +19,13 @@ const Hero = () => {
     <section id="main-content" className="bg-gradient-to-b from-[#1a2b21] to-[#2a3b31] text-white py-20">
       <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-1/2 mb-10 md:mb-0">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="hero-title text-4xl md:text-6xl font-bold mb-4">
             Empowering Creators Through Blockchain
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-[#c2c8c4]">
+          <p className="hero-subtitle text-xl md:text-2xl mb-8 text-[#c2c8c4]">
             Yuca Media bridges the gap between traditional entertainment and Web3 technology, creating new opportunities for independent artists and filmmakers.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="hero-buttons flex flex-col sm:flex-row gap-4">
             <button 
               className="bg-[#c2c8c4] text-[#1a2b21] px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all text-lg"
               aria-label="Explore CryptoLottery"

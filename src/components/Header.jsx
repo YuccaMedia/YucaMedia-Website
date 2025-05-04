@@ -1,17 +1,23 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import '../styles/globals.css'; 
 
 const Header = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   return (
     <header className="bg-[#1a2b21] text-white p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <img 
-            src="/assets/images/yuca-media-logo.svg" 
-            alt="Yuca Media Logo" 
-            className="h-10 w-10" 
-            aria-label="Yuca Media Home"
-          />
+          <Link to="/">
+            <img 
+              src="/assets/images/yuca-media-logo.svg" 
+              alt="Yuca Media Logo" 
+              className="h-10 w-10" 
+              aria-label="Yuca Media Home"
+            />
+          </Link>
           <span className="text-xl font-bold">Yuca Media</span>
         </div>
         
@@ -22,11 +28,37 @@ const Header = () => {
         
         <nav aria-label="Main Navigation">
           <ul className="flex space-x-6">
-            <li><a href="#about" className="hover:text-[#c2c8c4] transition-colors">About</a></li>
-            <li><a href="#services" className="hover:text-[#c2c8c4] transition-colors">Services</a></li>
-            <li><a href="#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</a></li>
-            <li><a href="#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</a></li>
-            <li><a href="#contact" className="hover:text-[#c2c8c4] transition-colors">Contact</a></li>
+            <li>
+              {isHomePage ? (
+                <a href="#about" className="hover:text-[#c2c8c4] transition-colors">About</a>
+              ) : (
+                <Link to="/#about" className="hover:text-[#c2c8c4] transition-colors">About</Link>
+              )}
+            </li>
+            <li>
+              <Link to="/services" className={`hover:text-[#c2c8c4] transition-colors ${location.pathname === '/services' ? 'font-bold' : ''}`}>
+                Services
+              </Link>
+            </li>
+            <li>
+              {isHomePage ? (
+                <a href="#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</a>
+              ) : (
+                <Link to="/#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</Link>
+              )}
+            </li>
+            <li>
+              {isHomePage ? (
+                <a href="#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</a>
+              ) : (
+                <Link to="/#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</Link>
+              )}
+            </li>
+            <li>
+              <Link to="/contact" className={`hover:text-[#c2c8c4] transition-colors ${location.pathname === '/contact' ? 'font-bold' : ''}`}>
+                Contact
+              </Link>
+            </li>
           </ul>
         </nav>
         

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Test</title>
+    <style>
+        body {
+            background-color: #1a2b21;
+            color: #c2c8c4;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            background: rgba(194, 200, 196, 0.1);
+            border: 2px solid #c2c8c4;
+            border-radius: 8px;
+            color: #c2c8c4;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: rgba(194, 200, 196, 0.2);
+        }
+        .sound-options {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #c2c8c4;
+            border-radius: 4px;
+            max-width: 80%;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sound Test Page</h1>
+    <p>This page tests different approaches to playing sounds to determine what works in your browser.</p>
+    
+    <div>
+        <button id="test1">Test HTML Audio Element</button>
+        <button id="test2">Test Web Audio API</button>
+        <button id="test3">Test Audio with User Gesture</button>
+    </div>
+
+    <div class="sound-options">
+        <button id="beep">Play Beep</button>
+        <button id="click">Play Click</button>
+        <button id="ping">Play Ping</button>
+    </div>
+    
+    <div class="status" id="status">Status messages will appear here...</div>
+    
+    <!-- Actual audio elements -->
+    <audio id="beepSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRl4BAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YToBAACBgIF/gn6DfYR8hXqGeId3iHaJdIpzi3KMcI1vjm2PbJBrkWmSZ5NmlGSVYpZhl1+YXplaml+bXZxcnVmeV59WoFOhUqJQo0+kTaVLpkmnaKhnqWaqZKtirGCtXq5dr1uwWbFXslWzU7RRtU+2TbdLuEm5R7pFu0O8Qb0/vj2/OsA4wTbCNMMyxDDFLsYsx2vIasloymfLZcxjzWHOX89d0FvRWdJX01XUU9VQ1k7XTNhK2UjaRttE3ELdQN4+3zzhOuI44zbkNOU25jToMusy7DHtL+4t7yvwKfEn8iXzI/Qh9R/2Hfcb+Bn5F/oV+xP8Ef0P/g3/CwAJAQcCBQMDBQYNCRQNHBQbHCAZJBghGiAZHxgeFx0WGxUaExkRGBMgGSwlGBwXGBkQFwIPAA0BCwMJBQcHBQkDCwEMAA4ADwARABIAFAAVABcAGAAZABsAHAAeAB8AIAAiACMAJQAmACcAKQAqACwALQAuADAAMQAzADQANQA3ADgAOgA7ADwAPgA/AEEAQgBDAEUARgBIAEkASgBMAE0ATwBQAFEAUwBUAFYAVwBYAFoAWwBdAF4AXwBhAGIAZABlAGYAaABpAGsAbABtAG8AcAByAHMAdAB2AHcAeQB6AHsAfQB+AIAAQdcAkwgABVJJRkZOAAAAV0FWRWZtdCAAAAAMAAAAAQABAAABAAQAZmFjdAQAAAABAAAAaW5zdCwAAABSZWNvcmRlZCB3aXRoIFNvdW5kIEZvcmdlIGFuZCBlZGl0ZWQgd2l0aCBBdWRhY2l0eQBkYXRhAAAAAAA=" type="audio/wav">
+    </audio>
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRmwEAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUgEAAAAAAAAgICA/4B/AACAgP9/gIB/gACAgICAAH+BgH9/gH+AgICAAIGBgIAAgIAAgH+Af4AAgYGAgIGBgIAAgH9/f39/f39/f39/f4AAgIAAgIGBgIF/f3+AgIAAgICAgQCCAIKBgACAgH9/gIGBfwCAgIGAgX+Af4CA/wCBAYGAgIABf39+gIB/gX+AgICAgQCAgAB/f31/f359f4B/gIKBgYGBgX+AgH5/f3+AgQGCgoCBgIF/gH9/gICBfwJ/gQGAfoF/f4B/gIB/gYF/gQCCAICAf4KAgn5/gH9+gH+AAIB/goODfoCAgH6Af36AgACAgYODg36AgH9+fn9/gIAAgYGBgYB/gH9/f4GAgICAgICAgICAgH+Af4CAgICAgIGBgYGBgH9/f3+AgICBgYGBgYGAgH9/f39/f39/f39/f3+AgICAgICBgYGBgYCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgAAAAICAgP+Af4AAgID/f4CAf4AAgICAgAB/gYB/f4B/gICAgACBgYCAAICAAIB/gH+AAIGBgICBgYCAAIB/f39/f39/f39/f3+AAIAB/4GBgIGA/39/f4GAgYCAgIGAAICCgYCAgH9/f4KAgYB/gH+BgIB/gH+Bf4KAgQCAgICAgYB/f4CC/4B+gYKBf4B/f4B/gICAgICAgYGBf4F/fn9/f4CA/4CCgoCBgYB/f4B/gIF/gYB/gYCAgH+AgX+AgICAf4B/gIGAgICAgX+AgH+AgICAgICAgYCAgIB/gICAgIKAgoGBgICAgICAgIB/gICAgIGAgYCBgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAAAACAgID/gH+AAICAf3+Af3+AAICAgIABf4CAf3+Af4CAgH+AgYCAgACAgACBgH+AAICBgIGBgYAAgIB/f3+Af39/f39/f3+AAICAgIGBgIGAgH9/f3+AgYCBgIGBgIGAgH9+fn9/f3+AgYGBgYGAgH9/f39/f39/f39/f39/gICAgICAgYGBgYGAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAAAAAgICA/4B/gACAgP9/gIB/gACAgICAAH+BgH9/gH+AgICAAIGBgIAAgIAAgH+Af4AAgYGAgIGBgIAAgH9/f39/f39/f39/f4AAgIAAgICBgYCBf39/f4CAgICAgICBgIGBgICAf39/f4CBgYGAgICAgIB/f39/f39/f3+AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==" type="audio/wav">
+    </audio>
+    <audio id="pingSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRtwCAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YbgCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAgIEBAQEBQUGBgYGBgcHBwcHBwgHCAcIBwgHBwcHBwcGBgYGBQUFBQQEAwMCAgEBAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQIDAwQEBQUGBgcHCAgJCQoKCwsMDA0NDg4PDw8QEBEREBERERESEREREBAQEA8PDg4NDAsMCwoJCQgHBwYFBQUEAwICAQEBAAAAAAAAAAAAAAAAAAEBAgIDAwQFBQYHCAgJCgsLDQ0ODxARERITFBQVFhYXFxgYGRkZGRoaGhoaGRkZGRgYFxcWFhUUFBMSEREQDw4NDA0LCgoJCAgHBgUFBAMDAgIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAgIEBAQEBQUGBgYGBgcHBwcHBwgHCAcIBwgHBwcHBwcGBgYGBQUFBQQEAwMCAgEBAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQIDAwQEBQUGBgcHCAgJCQoKCwsMDA0NDg4PDw8QEBEREBERERESEREREBAQEA8PDg4NDAsMCwoJCQgHBwYFBQUEAwICAQEBAAAAAAAAAAAAAAAAAAEBAgIDAwQFBQYHCAgJCgsLDQ0ODxARERITFBQVFhYXFxgYGRkZGRoaGhoaGRkZGRgYFxcWFhUUFBMSEREQDw4NDA0LCgoJCAgHBgUFBAMDAgIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" type="audio/wav">
+    </audio>
+    
+    <script>
+        // Log function to update status
+        function log(message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML += `<div>${message}</div>`;
+            console.log(message);
+        }
+        
+        // Test 1: Basic HTML Audio Element
+        document.getElementById('test1').addEventListener('click', function() {
+            try {
+                const audio = new Audio();
+                audio.src = "data:audio/wav;base64,UklGRl4BAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YToBAACBgIF/gn6DfYR8hXqGeId3iHaJdIpzi3KMcI1vjm2PbJBrkWmSZ5NmlGSVYpZhl1+YXplaml+bXZxcnVmeV59WoFOhUqJQo0+kTaVLpkmnaKhnqWaqZKtirGCtXq5dr1uwWbFXslWzU7RRtU+2TbdLuEm5R7pFu0O8Qb0/vj2/OsA4wTbCNMMy";
+                audio.volume = 0.5;
+                audio.play().then(() => {
+                    log("Test 1: Audio played successfully!");
+                }).catch(err => {
+                    log(`Test 1: Error playing audio: ${err.message}`);
+                });
+            } catch (e) {
+                log(`Test 1: Exception: ${e.message}`);
+            }
+        });
+        
+        // Test 2: Web Audio API
+        document.getElementById('test2').addEventListener('click', function() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) {
+                    log("Test 2: Web Audio API not supported");
+                    return;
+                }
+                
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 440; // A4 note
+                gainNode.gain.value = 0.1; // Lower volume
+                
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                    log("Test 2: Web Audio API test completed");
+                }, 500);
+            } catch (e) {
+                log(`Test 2: Exception: ${e.message}`);
+            }
+        });
+        
+        // Test 3: Audio with explicit user gesture handling
+        document.getElementById('test3').addEventListener('click', function() {
+            try {
+                log("Test 3: Attempting to play sound with user gesture...");
+                
+                // For browsers that need user gesture
+                if (typeof document.documentElement.audioPlayGesture !== 'undefined') {
+                    document.documentElement.audioPlayGesture = 'allowed';
+                    log("Test 3: Set audioPlayGesture to allowed");
+                }
+                
+                const audio = document.getElementById('beepSound');
+                
+                // Reset audio
+                audio.pause();
+                audio.currentTime = 0;
+                
+                // Play with promise handling
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        log("Test 3: Audio played successfully!");
+                    }).catch(err => {
+                        log(`Test 3: Error playing audio: ${err.message}`);
+                    });
+                } else {
+                    log("Test 3: Play promise not supported, but audio should be playing");
+                }
+            } catch (e) {
+                log(`Test 3: Exception: ${e.message}`);
+            }
+        });
+        
+        // Sound effect buttons
+        document.getElementById('beep').addEventListener('click', function() {
+            const audio = document.getElementById('beepSound');
+            audio.currentTime = 0;
+            audio.play().catch(e => log(`Beep error: ${e.message}`));
+        });
+        
+        document.getElementById('click').addEventListener('click', function() {
+            const audio = document.getElementById('clickSound');
+            audio.currentTime = 0;
+            audio.play().catch(e => log(`Click error: ${e.message}`));
+        });
+        
+        document.getElementById('ping').addEventListener('click', function() {
+            const audio = document.getElementById('pingSound');
+            audio.currentTime = 0;
+            audio.play().catch(e => log(`Ping error: ${e.message}`));
+        });
+        
+        // Log browser audio capabilities
+        window.addEventListener('DOMContentLoaded', function() {
+            log(`Browser: ${navigator.userAgent}`);
+            log(`Audio element supported: ${typeof Audio !== 'undefined'}`);
+            log(`Web Audio API supported: ${typeof (window.AudioContext || window.webkitAudioContext) !== 'undefined'}`);
+            log("Click any button to test sound playback");
+        });
+    </script>
+</body>
+</html>
