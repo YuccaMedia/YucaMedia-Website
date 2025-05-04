@@ -1,4 +1,5 @@
 // Services Page 3D Effects and Interactions
+console.log("Services.js is loaded and running");
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Three.js for 3D background effects
     initThreeJSBackground();
