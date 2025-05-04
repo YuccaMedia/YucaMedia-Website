@@ -1,22 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tailwindcss from 'tailwindcss';
 
 export default defineConfig({
   plugins: [
     react(),
   ],
-  css: {
-    postcss: {
-      plugins: [
-        tailwindcss,
-        require('autoprefixer'),
-      ],
-    },
-  },
   server: {
-    port: 3000,
-    open: true,
+    port: 8080,
+    open: '/#main-content',
+    host: '127.0.0.1',
   },
   build: {
     outDir: 'dist',

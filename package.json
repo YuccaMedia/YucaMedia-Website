@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint src --ext js,jsx",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
-    "security": "npm audit"
+    "security": "npm audit",
+    "start": "vite --port 8080 --open /#main-content"
   },
   "dependencies": {
     "@solana/wallet-adapter-base": "^0.9.22",
@@ -26,7 +27,7 @@
   "devDependencies": {
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
-    "@vitejs/plugin-react": "^4.0.1",
+    "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.43.0",
     "eslint-plugin-react": "^7.32.2",
