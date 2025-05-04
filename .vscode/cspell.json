@@ -8,7 +8,8 @@
     "Solana",
     "CryptoLottery",
     "blockchain",
-    "webp"
+    "webp",
+    "importmap"
   ],
   "ignorePaths": [
     "node_modules",
