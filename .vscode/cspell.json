@@ -1,0 +1,19 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "Yuca",
+    "tailwindcss",
+    "GSAP",
+    "Solana",
+    "CryptoLottery",
+    "blockchain",
+    "webp"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "build",
+    "public/assets/**"
+  ]
+}
