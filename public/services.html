@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuca Media - Services</title>
+    <meta name="description" content="Explore the innovative services offered by Yuca Media, from blockchain development to creative content production.">
+    
+    <!-- Font preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
+    
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-dark: #1a2b21;
+            --primary-light: #c2c8c4;
+            --bg-light: #f5f8f6;
+            --text-main: #c2c8c4;
+            --accent-green: #2a9d8f;
+            --accent-blue: #4361ee;
+            --accent-purple: #7209b7;
+            --accent-orange: #e76f51;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: var(--primary-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        .hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Header */
+        header {
+            background-color: var(--primary-dark);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo img {
+            height: 40px;
+            width: auto;
+        }
+        
+        .logo span {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-light);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            color: white;
+        }
+        
+        /* Main content */
+        main {
+            margin-top: 80px;
+            padding-bottom: 100px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            padding: 3rem 0;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-light);
+        }
+        
+        /* Services showcase */
+        .services-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .service-card-container {
+            perspective: 1000px;
+            width: 100%;
+            margin-bottom: 8rem;
+        }
+        
+        .service-card {
+            min-height: 500px;
+            background: rgba(194, 200, 196, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.6s ease, box-shadow 0.6s ease;
+            position: relative;
+            transform-style: preserve-3d;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .service-card:hover {
+            transform: rotateY(5deg) rotateX(5deg);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .service-icon {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .service-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .service-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .service-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+        
+        .service-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            margin: 2rem 0;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: left;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .feature p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        .service-cta {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 1rem 2rem;
+            font-weight: 600;
+            border-radius: 30px;
+            text-decoration: none;
+            margin-top: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .service-cta:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Service card variations */
+        .blockchain-dev {
+            background: linear-gradient(315deg, rgba(42, 157, 143, 0.1) 0%, rgba(26, 43, 33, 0.95) 100%);
+            border-left: 5px solid var(--accent-green);
+        }
+        
+        .web-dev {
+            background: linear-gradient(315deg, rgba(67, 97, 238, 0.1) 0%, rgba(26, 43, 33, 0.95) 100%);
+            border-left: 5px solid var(--accent-blue);
+        }
+        
+        .creative-services {
+            background: linear-gradient(315deg, rgba(114, 9, 183, 0.1) 0%, rgba(26, 43, 33, 0.95) 100%);
+            border-left: 5px solid var(--accent-purple);
+        }
+        
+        .consulting {
+            background: linear-gradient(315deg, rgba(231, 111, 81, 0.1) 0%, rgba(26, 43, 33, 0.95) 100%);
+            border-left: 5px solid var(--accent-orange);
+        }
+        
+        /* 3D Scene Canvas */
+        #scene-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* 3D floating icons */
+        .float-container {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            z-index: 10;
+            animation: float 8s ease-in-out infinite;
+            opacity: 0.6;
+        }
+        
+        .float-icon {
+            width: 100%;
+            height: 100%;
+            fill: var(--primary-light);
+            filter: drop-shadow(0 0 5px rgba(194, 200, 196, 0.3));
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-15px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(0) rotate(0deg);
+            }
+            75% {
+                transform: translateY(15px) rotate(-5deg);
+            }
+        }
+        
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary-dark);
+            padding: 3rem 5%;
+            border-top: 1px solid rgba(194, 200, 196, 0.1);
+            text-align: center;
+        }
+        
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s;
+        }
+        
+        footer a:hover {
+            color: white;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .service-card {
+                padding: 1.5rem;
+            }
+            
+            .service-title {
+                font-size: 1.8rem;
+            }
+            
+            .service-icon {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .service-features {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="scene-container"></div>
+    <div class="particles" id="particles"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="assets/images/yuca-media-logo.svg" alt="Yuca Media Logo">
+            <span>Yuca Media</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html" class="active">Services</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main>
+        <h1 class="section-title">Our Services</h1>
+        
+        <div class="services-container">
+            <!-- Blockchain Development -->
+            <div class="service-card-container" data-service="blockchain">
+                <div class="service-card blockchain-dev">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.75 13.25H6.75V17.25H10.75V13.25Z" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17.25 13.25H13.25V17.25H17.25V13.25Z" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10.75 6.75H6.75V10.75H10.75V6.75Z" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17.25 6.75H13.25V10.75H17.25V6.75Z" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h2 class="service-title">Blockchain Development</h2>
+                    <p class="service-description">
+                        We leverage the transformative power of blockchain to build decentralized applications, smart contracts, and innovative solutions that redefine how businesses and communities interact in the digital space.
+                    </p>
+                    
+                    <div class="service-features">
+                        <div class="feature">
+                            <h4>Smart Contract Development</h4>
+                            <p>Secure, audited smart contracts built on Ethereum, Solana, and other leading blockchain networks.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>dApp Creation</h4>
+                            <p>Full-stack decentralized applications with seamless user experiences and robust backend functionality.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Token Development</h4>
+                            <p>Custom cryptocurrency tokens and NFT systems designed to your specific business requirements.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Blockchain Integration</h4>
+                            <p>Integrate blockchain technology into your existing systems and workflows without disruption.</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="service-cta">Explore Blockchain Services</a>
+                </div>
+            </div>
+            
+            <!-- Web Development -->
+            <div class="service-card-container" data-service="webdev">
+                <div class="service-card web-dev">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.5 9L15.6716 9.17157C17.0049 10.5049 17.6716 11.1716 17.6716 12C17.6716 12.8284 17.0049 13.4951 15.6716 14.8284L15.5 15" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M13.5 7.5L10.5 16.5" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8.5 9L8.32843 9.17157C6.99509 10.5049 6.32843 11.1716 6.32843 12C6.32843 12.8284 6.99509 13.4951 8.32843 14.8284L8.5 15" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12Z" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h2 class="service-title">Web Development</h2>
+                    <p class="service-description">
+                        We design and build innovative websites and web applications that captivate audiences, drive engagement, and deliver exceptional user experiences across all devices.
+                    </p>
+                    
+                    <div class="service-features">
+                        <div class="feature">
+                            <h4>Interactive Web Experiences</h4>
+                            <p>Immersive, responsive websites that engage users with cutting-edge animations and intuitive interfaces.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Web3 Integration</h4>
+                            <p>Future-ready websites with cryptocurrency wallet connections and blockchain functionality.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Progressive Web Apps</h4>
+                            <p>Fast, reliable, and engaging apps that work for all users, regardless of browser choice or network connection.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>E-commerce Solutions</h4>
+                            <p>Custom online stores with secure payment processing, inventory management, and crypto payment options.</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="service-cta">Explore Web Development</a>
+                </div>
+            </div>
+            
+            <!-- Creative Services -->
+            <div class="service-card-container" data-service="creative">
+                <div class="service-card creative-services">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" stroke="#c2c8c4" stroke-width="1.5"/>
+                            <path d="M17 9.5V8.1C17 7.53995 17 7.25992 16.891 7.04601C16.7951 6.85785 16.6422 6.70487 16.454 6.60899C16.2401 6.5 15.96 6.5 15.4 6.5H14.5M7 10.5V7.1C7 6.53995 7 6.25992 7.10899 6.04601C7.20487 5.85785 7.35785 5.70487 7.54601 5.60899C7.75992 5.5 8.03995 5.5 8.6 5.5H10.5L12.5 7.5" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M10.5 7.5H12.5L17 12M10.5 7.5V11.5H8.5M17 12L14 15H10M17 12L19 14" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M11.5 15L10 18.5" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M13.5 15L15 18.5" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h2 class="service-title">Creative Services</h2>
+                    <p class="service-description">
+                        Our creative team transforms ideas into compelling visual narratives through cutting-edge design, animation, and video production that elevates your brand and captivates your audience.
+                    </p>
+                    
+                    <div class="service-features">
+                        <div class="feature">
+                            <h4>3D Animation & Modeling</h4>
+                            <p>Immersive 3D experiences, character models, and environments for web, games, and promotional content.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Video Production</h4>
+                            <p>High-quality video content creation, from concept to editing, ready for web and social media distribution.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>NFT Creation & Design</h4>
+                            <p>Original, collectible digital assets designed for blockchain platforms and metaverse integration.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Brand Identity Development</h4>
+                            <p>Comprehensive branding solutions including logos, style guides, and visual identity systems.</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="service-cta">Explore Creative Services</a>
+                </div>
+            </div>
+            
+            <!-- Consulting -->
+            <div class="service-card-container" data-service="consulting">
+                <div class="service-card consulting">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 7V13" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 17.01L12.01 16.999" stroke="#c2c8c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h2 class="service-title">Web3 Consulting</h2>
+                    <p class="service-description">
+                        Navigate the complexities of blockchain technology and Web3 ecosystems with our expert consulting services. We help businesses understand, implement, and benefit from emerging digital technologies.
+                    </p>
+                    
+                    <div class="service-features">
+                        <div class="feature">
+                            <h4>Blockchain Strategy</h4>
+                            <p>Custom roadmaps for integrating blockchain technology into your business model and operations.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Token Economics</h4>
+                            <p>Comprehensive design and analysis of tokenomics systems for sustainable blockchain projects.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Technical Audits</h4>
+                            <p>Security and efficiency evaluations of blockchain implementations and smart contracts.</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Web3 Transformation</h4>
+                            <p>Guidance on transitioning from Web2 to Web3 business models and technologies.</p>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="service-cta">Explore Consulting Services</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Yuca Media. All rights reserved.</p>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="services.html">Services</a>
+            <a href="#">Projects</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="services.js"></script>
+    <script src="audio-solution.js"></script>
+    
+    <!-- Floating icons -->
+    <div class="float-container" style="top: 25%; left: 5%;">
+        <svg class="float-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 9.5V5.5C4.5 4.09554 4.5 3.39331 4.83706 2.88886C4.98298 2.67048 5.17048 2.48298 5.38886 2.33706C5.89331 2 6.59554 2 8 2H16C17.4045 2 18.1067 2 18.6111 2.33706C18.8295 2.48298 19.017 2.67048 19.1629 2.88886C19.5 3.39331 19.5 4.09554 19.5 5.5V18.5C19.5 19.9045 19.5 20.6067 19.1629 21.1111C19.017 21.3295 18.8295 21.517 18.6111 21.6629C18.1067 22 17.4045 22 16 22H8C6.59554 22 5.89331 22 5.38886 21.6629C5.17048 21.517 4.98298 21.3295 4.83706 21.1111C4.5 20.6067 4.5 19.9045 4.5 18.5V14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 6.5H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 10H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 13.5H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M9 17H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+    </div>
+    
+    <div class="float-container" style="top: 40%; left: 90%; animation-delay: 1s;">
+        <svg class="float-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7.5 12.5H12.5V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M11.5 16.5V16.5C11.5 15.12 10.38 14 9 14H7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+    
+    <div class="float-container" style="top: 70%; left: 15%; animation-delay: 2s;">
+        <svg class="float-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3
