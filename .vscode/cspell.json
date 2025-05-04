@@ -9,7 +9,8 @@
     "CryptoLottery",
     "blockchain",
     "webp",
-    "importmap"
+    "importmap",
+    "drei"
   ],
   "ignorePaths": [
     "node_modules",
