@@ -14,6 +14,10 @@ Yuca Media is a digital development company building Web2/Web3 hybrid platforms 
 
 - **Yuca Studios**: Our creative subsidiary offering blockchain-driven production services for film, music videos, and creative content through community governance.
 
+## Problem We're Solving
+
+The entertainment community in Los Angeles, particularly independent artists, filmmakers, and crew members, faces a severe shortage of work opportunities, worsened by the 2025 industry strikes. Over 70% of artists at the Hollywood Arts Collective are facing potential eviction due to the decline in film and television productions. Traditional funding models and gatekeepers have made it increasingly difficult for emerging talent to create, fund, and distribute their work.
+
 ## Project Overview
 
 This repository contains the frontend application for Yuca Media's web platform, built with modern web technologies and integrated with the Solana blockchain.
@@ -39,12 +43,23 @@ This repository contains the frontend application for Yuca Media's web platform,
 ```
 /yucamedia-website/
 ├── public/                  # Static assets served as-is
+│   ├── index.html           # Main HTML file
+│   └── assets/              # Public assets (SVGs, images)
 ├── src/
 │   ├── assets/              # Images, fonts, and other static resources
+│   │   ├── images/          # SVG and image files
+│   │   └── fonts/           # Font files
 │   ├── animations/          # Animation-related code
 │   ├── components/          # React components
+│   │   ├── Header.jsx       # Site header with navigation
+│   │   ├── Hero.jsx         # Hero section with animation
+│   │   └── Dashboard.jsx    # Interactive user dashboard
 │   ├── styles/              # CSS and styling files
+│   │   ├── globals.css      # Global styles
+│   │   └── tailwind.css     # Tailwind imports and customizations
 │   ├── scripts/             # JavaScript utilities and helpers
+│   │   ├── logo-animation.js # Logo animation using Three.js
+│   │   └── main.js          # Main application scripts
 │   ├── App.jsx              # Main application component
 │   └── main.jsx             # Application entry point
 ├── security/                # Security documentation and configuration
@@ -56,6 +71,31 @@ This repository contains the frontend application for Yuca Media's web platform,
 ├── postcss.config.js        # PostCSS configuration
 └── package.json             # Project dependencies and scripts
 ```
+
+## Accessibility Features
+
+This project is committed to WCAG 2.1 Level AA compliance. Our accessibility features include:
+
+### Semantic HTML
+Proper HTML5 elements are used throughout to ensure screen readers understand the content structure. This includes using `<header>`, `<main>`, `<section>`, `<nav>`, and other semantic elements.
+
+### Skip Navigation
+A skip-to-content link allows keyboard users to bypass navigation and go directly to main content, improving navigation for keyboard-only users and screen reader users.
+
+### ARIA Attributes
+ARIA (Accessible Rich Internet Applications) attributes are used throughout the code to enhance screen reader compatibility and provide better context for users with visual impairments.
+
+### Keyboard Navigation
+All interactive elements are accessible and usable via keyboard, following a logical tab order. This ensures users who cannot use a mouse can still interact with all functionality.
+
+### Color Contrast
+The color palette has been chosen to ensure sufficient contrast for readability by users with color vision deficiencies. All text meets WCAG AA standards for contrast ratio.
+
+### Text Alternatives
+All non-text content, including images and SVGs, has appropriate text alternatives (alt text) to ensure information is accessible to users who cannot see images.
+
+### Accessibility Widget
+An accessibility widget allows users to adjust contrast, text size, and other settings to customize their experience according to their needs and preferences.
 
 ## Getting Started
 
@@ -89,7 +129,7 @@ This repository contains the frontend application for Yuca Media's web platform,
    npm run dev
    ```
 
-5. Open your browser to http://localhost:3000
+5. Open your browser to http://localhost:8080
 
 ### Building for Production
 
@@ -105,18 +145,6 @@ The optimized files will be available in the `dist` directory.
 - **Q3 2025**: Begin hiring core team and develop CryptoLottery beta version
 - **Q4 2025**: Launch platform beta; start pre-production for Yuca Studios' first pilot
 - **Q2 2026**: Release first Yuca Studios pilot project and open platform to broader creative community
-
-## Accessibility
-
-This project is committed to WCAG 2.1 Level AA compliance. Our accessibility features include:
-
-- Semantic HTML structure
-- Keyboard navigation support
-- ARIA attributes for screen readers
-- Skip-to-content links
-- Sufficient color contrast
-- Text alternatives for non-text content
-- Interactive accessibility widget
 
 ## Security
 
