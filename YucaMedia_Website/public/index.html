@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexagon Test</title>
+    <link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body class="bg-red-500">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" style="width: 400px; height: 500px;">
+        <!-- Dark green background circle -->
+        <circle cx="200" cy="200" r="180" fill="#1a2b21" />
+        
+        <!-- Light gray/silver outer circle -->
+        <circle cx="200" cy="200" r="170" fill="none" stroke="#c2c8c4" stroke-width="4" />
+        
+        <!-- Animated hexagon dots -->
+        <g id="hexagonDots">
+            <!-- Top row -->
+            <circle cx="200" cy="45" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" repeatCount="indefinite" />
+            </circle>
+            
+            <!-- Top-right dots -->
+            <circle cx="255" cy="70" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.25s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="310" cy="100" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.5s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="340" cy="150" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="0.75s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="325" cy="235" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1s" repeatCount="indefinite" />
+            </circle>
+            
+            <!-- Bottom-right dots -->
+            <circle cx="310" cy="300" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.25s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="255" cy="330" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.5s" repeatCount="indefinite" />
+            </circle>
+            
+            <!-- Bottom dots -->
+            <circle cx="200" cy="355" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="1.75s" repeatCount="indefinite" />
+            </circle>
+            
+            <!-- Bottom-left dots -->
+            <circle cx="145" cy="330" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="90" cy="300" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.25s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="75" cy="235" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.5s" repeatCount="indefinite" />
+            </circle>
+            
+            <!-- Top-left dots -->
+            <circle cx="60" cy="150" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="2.75s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="90" cy="100" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="3s" repeatCount="indefinite" />
+            </circle>
+            <circle cx="145" cy="70" r="3" fill="#c2c8c4">
+                <animate attributeName="opacity" values="0.2;1;0.2" dur="3s" begin="3.25s" repeatCount="indefinite" />
+            </circle>
+        </g>
+    </svg>
+</body>
+</html>
