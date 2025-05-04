@@ -30,26 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
         link.setAttribute('data-link-id', `link-${index}`);
     });
     
-    // Add a direct navigation button for testing
-    const debugButton = document.createElement('button');
-    debugButton.innerHTML = 'Direct to Services Page';
-    debugButton.style.position = 'fixed';
-    debugButton.style.bottom = '60px';
-    debugButton.style.right = '10px';
-    debugButton.style.zIndex = '9999';
-    debugButton.style.padding = '10px';
-    debugButton.style.background = '#2a9d8f';
-    debugButton.style.color = 'white';
-    debugButton.style.border = 'none';
-    debugButton.style.borderRadius = '5px';
-    debugButton.style.cursor = 'pointer';
-    
-    debugButton.addEventListener('click', function() {
-        console.log('Debug button clicked - attempting direct navigation');
-        window.location.href = '/public/services.html';
-    });
-    
-    document.body.appendChild(debugButton);
+    // Debug button is now disabled in production
+    // The floating button has been removed as it's no longer needed
+    console.log('Debug navigation active - link monitoring enabled');
     
     // Log browser details
     console.log('Browser details:');
