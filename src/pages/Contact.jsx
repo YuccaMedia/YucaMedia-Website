@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { initializeGSAP, createScrollAnimation, fadeIn } from '../services/animation';
 
-// Register GSAP plugins
+// Register ScrollTrigger at the component level to ensure it's available
 gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
@@ -196,53 +197,56 @@ const Contact = () => {
     }
   }, []);
 
-  // Scroll animations
+  // Initialize GSAP and scroll animations
   useEffect(() => {
+    // Make sure ScrollTrigger is registered both globally and in this component
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Initialize GSAP with ScrollTrigger
+    initializeGSAP();
+    
     // Form animations
     if (formRef.current) {
       const formItems = formRef.current.querySelectorAll('div');
-      gsap.from(formItems, {
+      createScrollAnimation(formItems, {
         y: 30,
         opacity: 0,
         duration: 0.6,
         stagger: 0.1,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: formRef.current,
-          start: 'top 80%'
-        }
+        ease: "power2.out"
+      }, {
+        trigger: formRef.current,
+        start: 'top 80%'
       });
     }
     
     // Info section animations
     if (infoSectionsRef.current) {
-      const infoSections = infoSectionsRef.current.querySelectorAll('> div');
-      gsap.from(infoSections, {
+      const infoSections = infoSectionsRef.current.querySelectorAll(':scope > div');
+      createScrollAnimation(infoSections, {
         x: 50,
         opacity: 0,
         duration: 0.8,
         stagger: 0.2,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: infoSectionsRef.current,
-          start: 'top 70%'
-        }
+        ease: "power2.out"
+      }, {
+        trigger: infoSectionsRef.current,
+        start: 'top 70%'
       });
     }
     
     // FAQ animations
     if (faqItemsRef.current) {
-      const faqItems = faqItemsRef.current.querySelectorAll('> div');
-      gsap.from(faqItems, {
+      const faqItems = faqItemsRef.current.querySelectorAll(':scope > div');
+      createScrollAnimation(faqItems, {
         y: 40,
         opacity: 0,
         duration: 0.6,
         stagger: 0.15,
-        ease: "back.out(1.2)",
-        scrollTrigger: {
-          trigger: faqItemsRef.current,
-          start: 'top 75%'
-        }
+        ease: "back.out(1.2)"
+      }, {
+        trigger: faqItemsRef.current,
+        start: 'top 75%'
       });
     }
 
@@ -334,9 +338,10 @@ const Contact = () => {
                   <select 
                     id="interest" 
                     name="interest" 
+                    defaultValue=""
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2a9d8f] focus:border-transparent"
                   >
-                    <option value="" disabled selected>Select your interest</option>
+                    <option value="" disabled>Select your interest</option>
                     <option value="blockchain">Blockchain Solutions</option>
                     <option value="cryptolottery">CryptoLottery</option>
                     <option value="studios">Yuca Studios</option>

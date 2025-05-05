@@ -1,12 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
   initializeGSAP, 
   createScrollAnimation, 
   fadeIn,
   clearScrollTriggers 
 } from '../services/animation';
+
+// Register ScrollTrigger at the component level to ensure it's available
+gsap.registerPlugin(ScrollTrigger);
 import ThreeScene from '../components/ThreeScene';
 import ParticleSystem from '../components/ParticleSystem';
 import ServiceCard from '../components/ServiceCard';
@@ -21,6 +25,9 @@ const Services = () => {
 
   // Initialize animations
   useEffect(() => {
+    // Make sure ScrollTrigger is registered both globally and in this component
+    gsap.registerPlugin(ScrollTrigger);
+    
     // Initialize GSAP with ScrollTrigger
     initializeGSAP();
     
