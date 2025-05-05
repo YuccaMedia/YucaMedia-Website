@@ -1,10 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-// Register GSAP plugins
-gsap.registerPlugin(ScrollTrigger);
+import { 
+  initializeGSAP, 
+  createScrollAnimation, 
+  fadeIn,
+  clearScrollTriggers 
+} from '../services/animation';
+import ThreeScene from '../components/ThreeScene';
+import ParticleSystem from '../components/ParticleSystem';
+import ServiceCard from '../components/ServiceCard';
 
 const Services = () => {
   // References for animation elements
@@ -16,19 +21,20 @@ const Services = () => {
 
   // Initialize animations
   useEffect(() => {
+    // Initialize GSAP with ScrollTrigger
+    initializeGSAP();
+    
     // Hero section animations
     if (mainTitleRef.current && subTitleRef.current) {
-      gsap.from(mainTitleRef.current, {
+      fadeIn(mainTitleRef.current, {
         y: 30,
-        opacity: 0,
         duration: 1,
         ease: "power3.out",
         delay: 0.2
       });
       
-      gsap.from(subTitleRef.current, {
+      fadeIn(subTitleRef.current, {
         y: 30,
-        opacity: 0,
         duration: 1,
         ease: "power3.out",
         delay: 0.4
@@ -38,59 +44,159 @@ const Services = () => {
     // Service cards animations
     if (serviceCardsRef.current) {
       const cards = serviceCardsRef.current.querySelectorAll('.service-card');
-      gsap.from(cards, {
+      createScrollAnimation(cards, {
         y: 50,
-        opacity: 0,
-        duration: 0.8,
         stagger: 0.2,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: serviceCardsRef.current,
-          start: 'top 75%'
-        }
+        ease: "power2.out"
+      }, {
+        trigger: serviceCardsRef.current,
+        start: 'top 75%'
       });
     }
 
     // Blockchain section animations
     if (blockchainSectionRef.current) {
       const items = blockchainSectionRef.current.querySelectorAll('.animate-item');
-      gsap.from(items, {
+      createScrollAnimation(items, {
         x: -50,
-        opacity: 0,
-        duration: 0.8,
         stagger: 0.2,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: blockchainSectionRef.current,
-          start: 'top 75%'
-        }
+        ease: "power2.out"
+      }, {
+        trigger: blockchainSectionRef.current,
+        start: 'top 75%'
       });
     }
 
     // CTA section animations
     if (ctaSectionRef.current) {
-      gsap.from(ctaSectionRef.current, {
+      createScrollAnimation(ctaSectionRef.current, {
         y: 30,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ctaSectionRef.current,
-          start: 'top 80%'
-        }
+        ease: "power2.out"
+      }, {
+        trigger: ctaSectionRef.current,
+        start: 'top 80%'
       });
     }
 
     // Clean up
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      clearScrollTriggers();
     };
   }, []);
 
+  // Define services data
+  const services = [
+    {
+      title: "Blockchain Development",
+      description: "We leverage the transformative power of blockchain to build decentralized applications, smart contracts, and innovative solutions that redefine how businesses and communities interact in the digital space.",
+      serviceType: "blockchain",
+      features: [
+        {
+          title: "Smart Contract Development",
+          description: "Secure, audited smart contracts built on Ethereum, Solana, and other leading blockchain networks."
+        },
+        {
+          title: "dApp Creation",
+          description: "Full-stack decentralized applications with seamless user experiences and robust backend functionality."
+        },
+        {
+          title: "Token Development",
+          description: "Custom cryptocurrency tokens and NFT systems designed to your specific business requirements."
+        },
+        {
+          title: "Blockchain Integration",
+          description: "Integrate blockchain technology into your existing systems and workflows without disruption."
+        }
+      ],
+      ctaText: "Explore Blockchain Services",
+      ctaLink: "/contact"
+    },
+    {
+      title: "Web Development",
+      description: "We design and build innovative websites and web applications that captivate audiences, drive engagement, and deliver exceptional user experiences across all devices.",
+      serviceType: "webdev",
+      features: [
+        {
+          title: "Interactive Web Experiences",
+          description: "Immersive, responsive websites that engage users with cutting-edge animations and intuitive interfaces."
+        },
+        {
+          title: "Web3 Integration",
+          description: "Future-ready websites with cryptocurrency wallet connections and blockchain functionality."
+        },
+        {
+          title: "Progressive Web Apps",
+          description: "Fast, reliable, and engaging apps that work for all users, regardless of browser choice or network connection."
+        },
+        {
+          title: "E-commerce Solutions",
+          description: "Custom online stores with secure payment processing, inventory management, and crypto payment options."
+        }
+      ],
+      ctaText: "Explore Web Development",
+      ctaLink: "/contact"
+    },
+    {
+      title: "Creative Services",
+      description: "Our creative team transforms ideas into compelling visual narratives through cutting-edge design, animation, and video production that elevates your brand and captivates your audience.",
+      serviceType: "creative",
+      features: [
+        {
+          title: "3D Animation & Modeling",
+          description: "Immersive 3D experiences, character models, and environments for web, games, and promotional content."
+        },
+        {
+          title: "Video Production",
+          description: "High-quality video content creation, from concept to editing, ready for web and social media distribution."
+        },
+        {
+          title: "NFT Creation & Design",
+          description: "Original, collectible digital assets designed for blockchain platforms and metaverse integration."
+        },
+        {
+          title: "Brand Identity Development",
+          description: "Comprehensive branding solutions including logos, style guides, and visual identity systems."
+        }
+      ],
+      ctaText: "Explore Creative Services",
+      ctaLink: "/contact"
+    },
+    {
+      title: "Web3 Consulting",
+      description: "Navigate the complexities of blockchain technology and Web3 ecosystems with our expert consulting services. We help businesses understand, implement, and benefit from emerging digital technologies.",
+      serviceType: "consulting",
+      features: [
+        {
+          title: "Blockchain Strategy",
+          description: "Custom roadmaps for integrating blockchain technology into your business model and operations."
+        },
+        {
+          title: "Token Economics",
+          description: "Comprehensive design and analysis of tokenomics systems for sustainable blockchain projects."
+        },
+        {
+          title: "Technical Audits",
+          description: "Security and efficiency evaluations of blockchain implementations and smart contracts."
+        },
+        {
+          title: "Web3 Transformation",
+          description: "Guidance on transitioning from Web2 to Web3 business models and technologies."
+        }
+      ],
+      ctaText: "Explore Consulting Services",
+      ctaLink: "/contact"
+    }
+  ];
+
   return (
     <>
+      {/* 3D Background */}
+      <ThreeScene />
+      
+      {/* Particle System */}
+      <ParticleSystem count={50} />
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-[#1a2b21] to-[#2a3b31] text-white py-20">
+      <div className="relative bg-gradient-to-b from-[#1a2b21]/90 to-[#2a3b31]/90 text-white py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 ref={mainTitleRef} className="text-4xl md:text-5xl font-bold mb-6">Our Services</h1>
@@ -102,128 +208,47 @@ const Services = () => {
       </div>
       
       {/* Main Services Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-[#1a2b21]/95">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-[#1a2b21] mb-12 text-center">What We Offer</h2>
+          <h2 className="text-3xl font-bold text-white mb-12 text-center section-title">What We Offer</h2>
           
-          <div ref={serviceCardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Web3 Development Card */}
-            <div className="service-card bg-[#f5f8f6] rounded-lg shadow-md overflow-hidden">
-              <div className="h-3 bg-[#2a9d8f]"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#1a2b21] mb-4">Web3 Development</h3>
-                <p className="text-gray-700 mb-4">
-                  Our team specializes in building decentralized applications and smart contracts for creative industries. We leverage blockchain technology to create transparent, secure platforms for content creators.
-                </p>
-                <ul className="space-y-2 mb-6 text-gray-700">
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Smart contract development
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    NFT marketplaces
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Decentralized funding platforms
-                  </li>
-                </ul>
-              </div>
-            </div>
-            
-            {/* CryptoLottery Card */}
-            <div className="service-card bg-[#f5f8f6] rounded-lg shadow-md overflow-hidden">
-              <div className="h-3 bg-[#2a9d8f]"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#1a2b21] mb-4">CryptoLottery Platform</h3>
-                <p className="text-gray-700 mb-4">
-                  Our innovative CryptoLottery platform creates a sustainable funding model for independent filmmakers and artists while providing participants with transparent, verifiably fair opportunities.
-                </p>
-                <ul className="space-y-2 mb-6 text-gray-700">
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Blockchain-verified randomness
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Transparent fund allocation
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Direct creator support
-                  </li>
-                </ul>
-              </div>
-            </div>
-            
-            {/* Yuca Studios Card */}
-            <div className="service-card bg-[#f5f8f6] rounded-lg shadow-md overflow-hidden">
-              <div className="h-3 bg-[#2a9d8f]"></div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-[#1a2b21] mb-4">Yuca Studios</h3>
-                <p className="text-gray-700 mb-4">
-                  Our production studio provides resources, expertise, and distribution channels for independent filmmakers and content creators, helping bring creative visions to life.
-                </p>
-                <ul className="space-y-2 mb-6 text-gray-700">
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Production resources
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Post-production facilities
-                  </li>
-                  <li className="flex items-start">
-                    <svg className="h-5 w-5 text-[#2a9d8f] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Web3 distribution platforms
-                  </li>
-                </ul>
-              </div>
-            </div>
+          <div ref={serviceCardsRef} className="services-container">
+            {services.map((service, index) => (
+              <ServiceCard
+                key={index}
+                title={service.title}
+                description={service.description}
+                features={service.features}
+                ctaText={service.ctaText}
+                ctaLink={service.ctaLink}
+                serviceType={service.serviceType}
+              />
+            ))}
           </div>
         </div>
       </section>
       
       {/* Blockchain Technology Section */}
-      <section ref={blockchainSectionRef} className="py-16 bg-[#f5f8f6]">
+      <section ref={blockchainSectionRef} className="py-16 bg-[#1a2b21]/80 border-t border-[#c2c8c4]/10">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-[#1a2b21] mb-6 animate-item">Blockchain Technology</h2>
-              <p className="text-lg mb-6 animate-item">
+              <h2 className="text-3xl font-bold text-white mb-6 animate-item">Blockchain Technology</h2>
+              <p className="text-lg text-[#c2c8c4] mb-6 animate-item">
                 At Yuca Media, we harness the power of blockchain technology to create new opportunities and revenue streams for creators in the entertainment industry.
               </p>
               <div className="space-y-4 animate-item">
-                <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="bg-[#1a2b21]/70 p-4 rounded-lg shadow-md border border-[#2a9d8f]/20">
                   <h3 className="font-bold text-[#2a9d8f] mb-2">Transparency</h3>
-                  <p>All transactions and revenue sharing are recorded on the blockchain, providing complete transparency and auditability.</p>
+                  <p className="text-[#c2c8c4]">All transactions and revenue sharing are recorded on the blockchain, providing complete transparency and auditability.</p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="bg-[#1a2b21]/70 p-4 rounded-lg shadow-md border border-[#2a9d8f]/20">
                   <h3 className="font-bold text-[#2a9d8f] mb-2">Creator Ownership</h3>
-                  <p>Our platform ensures creators maintain ownership of their intellectual property while expanding distribution.</p>
+                  <p className="text-[#c2c8c4]">Our platform ensures creators maintain ownership of their intellectual property while expanding distribution.</p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="bg-[#1a2b21]/70 p-4 rounded-lg shadow-md border border-[#2a9d8f]/20">
                   <h3 className="font-bold text-[#2a9d8f] mb-2">Smart Contracts</h3>
-                  <p>Automated contracts handle rights management, royalty payments, and revenue sharing with no intermediaries.</p>
+                  <p className="text-[#c2c8c4]">Automated contracts handle rights management, royalty payments, and revenue sharing with no intermediaries.</p>
                 </div>
               </div>
             </div>
