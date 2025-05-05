@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+// Import from our central GSAP configuration to ensure plugins are registered
+import { gsap, ScrollTrigger, ensureScrollTriggerRegistered } from '../services/gsap-config';
 import { 
   initializeGSAP, 
   createScrollAnimation, 
@@ -9,8 +9,15 @@ import {
   clearScrollTriggers 
 } from '../services/animation';
 
-// Register ScrollTrigger at the component level to ensure it's available
-gsap.registerPlugin(ScrollTrigger);
+// Ensure ScrollTrigger is properly registered
+try {
+  gsap.registerPlugin(ScrollTrigger);
+  console.log('ScrollTrigger registered in Services component');
+} catch (error) {
+  console.error('Failed to register ScrollTrigger in Services component:', error);
+}
+
+// Import components after GSAP setup to ensure proper plugin registration
 import ThreeScene from '../components/ThreeScene';
 import ParticleSystem from '../components/ParticleSystem';
 import ServiceCard from '../components/ServiceCard';
@@ -25,11 +32,21 @@ const Services = () => {
 
   // Initialize animations
   useEffect(() => {
-    // Make sure ScrollTrigger is registered both globally and in this component
-    gsap.registerPlugin(ScrollTrigger);
-    
-    // Initialize GSAP with ScrollTrigger
-    initializeGSAP();
+    // Make sure ScrollTrigger is properly registered and GSAP is initialized
+    try {
+      ensureScrollTriggerRegistered();
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // Initialize GSAP with ScrollTrigger
+      const initSuccess = initializeGSAP();
+      if (!initSuccess) {
+        console.error('Failed to initialize GSAP in Services component');
+      } else {
+        console.log('GSAP successfully initialized in Services component');
+      }
+    } catch (error) {
+      console.error('Error setting up ScrollTrigger in Services component:', error);
+    }
     
     // Hero section animations
     if (mainTitleRef.current && subTitleRef.current) {

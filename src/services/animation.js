@@ -28,20 +28,19 @@ export const initializeGSAP = () => {
     const scrollTriggerRegistered = ensureScrollTriggerRegistered();
     
     if (scrollTriggerRegistered) {
-      // Verify registration was successful
+      // Force direct registration to ensure it's properly registered
+      try {
+        gsap.registerPlugin(ScrollTrigger);
+        console.log('✅ ScrollTrigger registered directly with GSAP');
+      } catch (innerError) {
+        console.error('❌ Direct ScrollTrigger registration failed:', innerError);
+      }
+      
+      // Verify it's available on the gsap object
       if (gsap.plugins && gsap.plugins.scrollTrigger) {
-        console.log('✅ ScrollTrigger successfully registered with GSAP');
+        console.log('✓ ScrollTrigger successfully verified in GSAP plugins');
       } else {
-        // This should not happen since ensureScrollTriggerRegistered should have caught it
-        console.warn('⚠️ ScrollTrigger registration verification failed');
-        
-        // Try one more time with a direct registration
-        try {
-          gsap.registerPlugin(ScrollTrigger);
-          console.log('🔄 ScrollTrigger re-registered directly');
-        } catch (innerError) {
-          console.error('❌ Direct ScrollTrigger registration failed:', innerError);
-        }
+        console.warn('⚠️ ScrollTrigger not found in GSAP plugins');
       }
     }
     
