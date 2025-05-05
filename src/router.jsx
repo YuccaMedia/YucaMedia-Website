@@ -24,14 +24,29 @@ const router = createBrowserRouter([
         index: true,
         element: <Home />,
       },
+    ],
+  },
+  // Standalone routes for Services and Contact
+  {
+    path: '/services',
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
       {
-        path: 'contact',
-        element: <Contact />,
-      },
-      {
-        path: 'services',
+        index: true,
         element: <Services />,
-      },
+      }
+    ],
+  },
+  {
+    path: '/contact',
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <Contact />,
+      }
     ],
   },
   // Keep landing page route for direct access via menu
