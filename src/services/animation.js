@@ -15,15 +15,25 @@ let gsapInitialized = false;
  * This should be called once at application startup
  */
 export const initializeGSAP = () => {
-  if (gsapInitialized) return;
+  if (gsapInitialized) return true;
   
-  if (typeof gsap !== 'undefined') {
-    // Register ScrollTrigger plugin
-    if (typeof ScrollTrigger !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
-      console.log('✅ ScrollTrigger successfully registered with GSAP');
+  try {
+    // Check if GSAP is available
+    if (typeof gsap === 'undefined') {
+      console.error('❌ GSAP not found. Make sure it is imported correctly.');
+      return false;
+    }
+    
+    // Register ScrollTrigger plugin if it's not already registered
+    if (!gsap.plugins || !gsap.plugins.scrollTrigger) {
+      if (typeof ScrollTrigger === 'undefined') {
+        console.error('❌ ScrollTrigger plugin not found. Make sure it is imported correctly.');
+      } else {
+        gsap.registerPlugin(ScrollTrigger);
+        console.log('✅ ScrollTrigger successfully registered with GSAP');
+      }
     } else {
-      console.error('❌ ScrollTrigger plugin not found. Make sure it is imported correctly.');
+      console.log('✅ ScrollTrigger already registered with GSAP');
     }
     
     // Set GSAP defaults
@@ -34,11 +44,11 @@ export const initializeGSAP = () => {
     });
     
     gsapInitialized = true;
-  } else {
-    console.error('❌ GSAP not found. Make sure it is imported correctly.');
+    return true;
+  } catch (error) {
+    console.error('❌ Error initializing GSAP:', error);
+    return false;
   }
-  
-  return gsapInitialized;
 };
 
 /**
@@ -80,42 +90,54 @@ export const fadeIn = (target, options = {}) => {
  * @returns {gsap.core.Tween} GSAP animation instance
  */
 export const createScrollAnimation = (target, animationOptions = {}, triggerOptions = {}) => {
-  if (!gsapInitialized) initializeGSAP();
+  // Ensure GSAP is initialized first
+  initializeGSAP();
   
-  // Verify ScrollTrigger is registered
-  if (!gsap.plugins || !gsap.plugins.scrollTrigger) {
-    console.error('ScrollTrigger is not registered! Using fallback animation without scroll trigger');
+  // Double-check ScrollTrigger is available
+  // Import ScrollTrigger if it's not already registered
+  try {
+    if (!gsap.plugins || !gsap.plugins.scrollTrigger) {
+      if (typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        console.log('📌 Late registration of ScrollTrigger successful');
+      } else {
+        console.error('ScrollTrigger is not registered! Using fallback animation without scroll trigger');
+        return fadeIn(target, animationOptions);
+      }
+    }
+    
+    const defaults = {
+      opacity: 0,
+      y: 30,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: 'power2.out'
+    };
+    
+    const triggerDefaults = {
+      trigger: target,
+      start: 'top 80%',
+      end: 'bottom 20%',
+      toggleActions: 'play none none reverse'
+    };
+    
+    // Extract debug option and remove it from GSAP animation config
+    const { debug, ...cleanAnimationOptions } = { ...defaults, ...animationOptions };
+    const triggerConfig = { ...triggerDefaults, ...triggerOptions };
+    
+    // Create the animation with ScrollTrigger
+    const config = { ...cleanAnimationOptions, scrollTrigger: triggerConfig };
+    const animation = gsap.from(target, config);
+    
+    if (debug) {
+      debugGSAP('scrollAnimation', animation);
+    }
+    
+    return animation;
+  } catch (error) {
+    console.error('Error creating scroll animation:', error);
     return fadeIn(target, animationOptions);
   }
-  
-  const defaults = {
-    opacity: 0,
-    y: 30,
-    duration: 0.8,
-    stagger: 0.1,
-    ease: 'power2.out'
-  };
-  
-  const triggerDefaults = {
-    trigger: target,
-    start: 'top 80%',
-    end: 'bottom 20%',
-    toggleActions: 'play none none reverse'
-  };
-  
-  // Extract debug option and remove it from GSAP animation config
-  const { debug, ...cleanAnimationOptions } = { ...defaults, ...animationOptions };
-  const triggerConfig = { ...triggerDefaults, ...triggerOptions };
-  
-  // Create the animation with ScrollTrigger
-  const config = { ...cleanAnimationOptions, scrollTrigger: triggerConfig };
-  const animation = gsap.from(target, config);
-  
-  if (debug) {
-    debugGSAP('scrollAnimation', animation);
-  }
-  
-  return animation;
 };
 
 /**
