@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Navigate to main site after transition
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = '/home';
                     }, 700);
                 }
             });

@@ -4,13 +4,13 @@ import '../styles/globals.css';
 
 const Header = () => {
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  const isHomePage = location.pathname === '/home' || location.pathname === '/home/';
 
   return (
     <header className="bg-[#1a2b21] text-white p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <Link to="/">
+          <Link to="/home">
             <img 
               src="/assets/images/yuca-media-logo.svg" 
               alt="Yuca Media Logo" 
@@ -32,8 +32,13 @@ const Header = () => {
               {isHomePage ? (
                 <a href="#about" className="hover:text-[#c2c8c4] transition-colors">About</a>
               ) : (
-                <Link to="/#about" className="hover:text-[#c2c8c4] transition-colors">About</Link>
+                <Link to="/home#about" className="hover:text-[#c2c8c4] transition-colors">About</Link>
               )}
+            </li>
+            <li>
+              <Link to="/landing" className="hover:text-[#c2c8c4] transition-colors">
+                Donate
+              </Link>
             </li>
             <li>
               <Link to="/services" className={`hover:text-[#c2c8c4] transition-colors ${location.pathname === '/services' ? 'font-bold' : ''}`}>
@@ -44,14 +49,14 @@ const Header = () => {
               {isHomePage ? (
                 <a href="#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</a>
               ) : (
-                <Link to="/#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</Link>
+                <Link to="/home#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</Link>
               )}
             </li>
             <li>
               {isHomePage ? (
                 <a href="#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</a>
               ) : (
-                <Link to="/#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</Link>
+                <Link to="/home#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</Link>
               )}
             </li>
             <li>
