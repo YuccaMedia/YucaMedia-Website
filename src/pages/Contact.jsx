@@ -1,12 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as THREE from 'three';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { initializeGSAP, createScrollAnimation, fadeIn } from '../services/animation';
-
-// Register ScrollTrigger at the component level to ensure it's available
-gsap.registerPlugin(ScrollTrigger);
+// Import from our central GSAP configuration
+import { gsap, ScrollTrigger, ensureScrollTriggerRegistered } from '../services/gsap-config';
+import { initializeGSAP, createScrollAnimation, fadeIn, staggerAnimation } from '../services/animation';
+import EnvelopeModel from '../components/EnvelopeModel';
 
 const Contact = () => {
   const sceneRef = useRef(null);
@@ -14,7 +12,9 @@ const Contact = () => {
   const heroSubtitleRef = useRef(null);
   const formRef = useRef(null);
   const infoSectionsRef = useRef(null);
-  const faqItemsRef = useRef(null);
+  const envelopeContainerRef = useRef(null);
+  const formFieldsRef = useRef([]);
+  const formButtonRef = useRef(null);
 
   // Initialize Three.js scene
   useEffect(() => {
@@ -33,56 +33,16 @@ const Contact = () => {
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
-    // Add ambient light
+    // Add lights and create particles
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
     
-    // Add directional light
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
     directionalLight.position.set(10, 10, 10);
     scene.add(directionalLight);
     
-    // Create hexagon particles
-    const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 150;
-    
-    const positionArray = new Float32Array(particlesCount * 3);
-    const scaleArray = new Float32Array(particlesCount);
-    
-    for (let i = 0; i < particlesCount; i++) {
-      // Position
-      positionArray[i * 3] = (Math.random() - 0.5) * 15; // x
-      positionArray[i * 3 + 1] = (Math.random() - 0.5) * 15; // y
-      positionArray[i * 3 + 2] = (Math.random() - 1) * 10; // z (mostly behind camera)
-      
-      // Scale
-      scaleArray[i] = Math.random();
-    }
-    
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
-    particlesGeometry.setAttribute('scale', new THREE.BufferAttribute(scaleArray, 1));
-    
-    // Create hexagon shape for particles
-    const hexShape = new THREE.Shape();
-    const size = 0.05;
-    
-    for (let i = 0; i < 6; i++) {
-      const angle = (Math.PI / 3) * i;
-      const x = size * Math.cos(angle);
-      const y = size * Math.sin(angle);
-      
-      if (i === 0) {
-        hexShape.moveTo(x, y);
-      } else {
-        hexShape.lineTo(x, y);
-      }
-    }
-    
-    hexShape.closePath();
-    
-    const hexGeometry = new THREE.ShapeGeometry(hexShape);
-    
-    // Create instanced mesh for better performance
+    // Create hexagon particles with more interesting animations
+    const hexGeometry = new THREE.CircleGeometry(0.05, 6);
     const material = new THREE.MeshStandardMaterial({
       color: 0x2a9d8f,
       transparent: true,
@@ -90,6 +50,7 @@ const Contact = () => {
       side: THREE.DoubleSide
     });
     
+    const particlesCount = 150;
     const instancedMesh = new THREE.InstancedMesh(hexGeometry, material, particlesCount);
     
     const matrix = new THREE.Matrix4();
@@ -97,17 +58,19 @@ const Contact = () => {
     const quaternion = new THREE.Quaternion();
     const scale = new THREE.Vector3();
     
+    // Store particle properties for animation
+    const particles = [];
+    
     for (let i = 0; i < particlesCount; i++) {
       position.set(
-        positionArray[i * 3],
-        positionArray[i * 3 + 1],
-        positionArray[i * 3 + 2]
+        (Math.random() - 0.5) * 15, 
+        (Math.random() - 0.5) * 15, 
+        (Math.random() - 1) * 10
       );
       
-      const scaleValue = scaleArray[i] * 2 + 0.5;
+      const scaleValue = Math.random() * 2 + 0.5;
       scale.set(scaleValue, scaleValue, scaleValue);
       
-      // Random rotation
       quaternion.setFromEuler(new THREE.Euler(
         Math.random() * Math.PI,
         Math.random() * Math.PI,
@@ -116,50 +79,60 @@ const Contact = () => {
       
       matrix.compose(position, quaternion, scale);
       instancedMesh.setMatrixAt(i, matrix);
+      
+      // Store particle animation properties
+      particles.push({
+        position: position.clone(),
+        rotation: new THREE.Euler(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        ),
+        speed: Math.random() * 0.01 + 0.002,
+        rotationSpeed: Math.random() * 0.005 + 0.002,
+        amplitude: Math.random() * 0.5 + 0.5
+      });
     }
     
+    instancedMesh.instanceMatrix.needsUpdate = true;
     scene.add(instancedMesh);
-    
-    // Position camera
     camera.position.z = 5;
     
-    // Animation variables
-    const speeds = [];
-    for (let i = 0; i < particlesCount; i++) {
-      speeds.push((Math.random() + 0.5) * 0.005);
-    }
+    // Animation function with micro animations
+    const clock = new THREE.Clock();
     
-    // Handle window resize
-    const handleResize = () => {
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    // Animation function
     function animate() {
       requestAnimationFrame(animate);
       
+      const time = clock.getElapsedTime();
+      
+      // Update each particle's position and rotation
       for (let i = 0; i < particlesCount; i++) {
-        instancedMesh.getMatrixAt(i, matrix);
-        matrix.decompose(position, quaternion, scale);
+        const particle = particles[i];
         
-        // Slow rotation
-        quaternion.multiply(new THREE.Quaternion().setFromEuler(
-          new THREE.Euler(0.001, 0.001, speeds[i])
+        // Position animation - gentle floating
+        position.copy(particle.position);
+        position.y += Math.sin(time * particle.speed) * particle.amplitude * 0.05;
+        position.x += Math.cos(time * particle.speed * 0.7) * particle.amplitude * 0.03;
+        
+        // Rotation animation
+        quaternion.setFromEuler(new THREE.Euler(
+          particle.rotation.x + time * particle.rotationSpeed,
+          particle.rotation.y + time * particle.rotationSpeed * 0.8,
+          particle.rotation.z + time * particle.rotationSpeed * 1.2
         ));
         
-        // Slight movement
-        position.y += Math.sin(Date.now() * 0.001 + i) * 0.001;
+        // Scale with subtle pulsing
+        const pulseScale = 1 + Math.sin(time * particle.speed * 3) * 0.05;
+        const baseScale = 0.5 + particle.amplitude;
+        scale.set(baseScale * pulseScale, baseScale * pulseScale, baseScale * pulseScale);
         
+        // Apply to matrix
         matrix.compose(position, quaternion, scale);
         instancedMesh.setMatrixAt(i, matrix);
       }
       
       instancedMesh.instanceMatrix.needsUpdate = true;
-      
       renderer.render(scene, camera);
     }
     
@@ -167,328 +140,430 @@ const Contact = () => {
 
     // Clean up
     return () => {
-      window.removeEventListener('resize', handleResize);
       scene.remove(instancedMesh);
-      particlesGeometry.dispose();
       hexGeometry.dispose();
       material.dispose();
       renderer.dispose();
     };
   }, []);
 
-  // Hero animations
+  // Initialize GSAP animations
   useEffect(() => {
-    if (heroTitleRef.current && heroSubtitleRef.current) {
-      gsap.from(heroTitleRef.current, {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        delay: 0.2
-      });
-      
-      gsap.from(heroSubtitleRef.current, {
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-        delay: 0.4
-      });
-    }
-  }, []);
-
-  // Initialize GSAP and scroll animations
-  useEffect(() => {
-    // Make sure ScrollTrigger is registered both globally and in this component
-    gsap.registerPlugin(ScrollTrigger);
-    
-    // Initialize GSAP with ScrollTrigger
+    // Initialize GSAP animations
     initializeGSAP();
     
-    // Form animations
+    // Add scroll animations here
+    if (heroTitleRef.current && heroSubtitleRef.current) {
+      // Animate hero text with letter-by-letter reveal
+      const heroTitle = heroTitleRef.current;
+      const heroText = heroTitle.textContent;
+      heroTitle.textContent = '';
+      
+      // Create spans for each letter
+      heroText.split('').forEach((letter, index) => {
+        const span = document.createElement('span');
+        span.textContent = letter === ' ' ? '\u00A0' : letter;
+        span.style.opacity = '0';
+        span.style.display = 'inline-block';
+        span.style.transform = 'translateY(20px)';
+        heroTitle.appendChild(span);
+      });
+      
+      // Animate each letter
+      gsap.to(heroTitle.children, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.03,
+        ease: "power2.out"
+      });
+      
+      // Apply the same letter-by-letter animation to subtitle
+      const heroSubtitle = heroSubtitleRef.current;
+      const subtitleText = heroSubtitle.textContent;
+      heroSubtitle.textContent = '';
+      
+      // Create spans for each letter in subtitle
+      subtitleText.split('').forEach((letter, index) => {
+        const span = document.createElement('span');
+        span.textContent = letter === ' ' ? '\u00A0' : letter;
+        span.style.opacity = '0';
+        span.style.display = 'inline-block';
+        span.style.transform = 'translateY(20px)';
+        heroSubtitle.appendChild(span);
+      });
+      
+      // Animate each letter in subtitle with a slight delay after the title
+      gsap.to(heroSubtitle.children, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.02,
+        delay: 0.8, // Start after title animation
+        ease: "power2.out"
+      });
+    }
+    
+    // Animate form elements when scrolled into view
     if (formRef.current) {
-      const formItems = formRef.current.querySelectorAll('div');
-      createScrollAnimation(formItems, {
-        y: 30,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out"
-      }, {
-        trigger: formRef.current,
-        start: 'top 80%'
-      });
+      const formElements = formRef.current.querySelectorAll('input, textarea, button, label');
+      formFieldsRef.current = formElements;
+      
+      // Use a simpler animation approach without ScrollTrigger
+      gsap.fromTo(formElements, 
+        { opacity: 0, y: 20 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 0.5, 
+          stagger: 0.1,
+          delay: 0.5
+        }
+      );
     }
     
-    // Info section animations
+    // Animate contact info cards
     if (infoSectionsRef.current) {
-      const infoSections = infoSectionsRef.current.querySelectorAll(':scope > div');
-      createScrollAnimation(infoSections, {
-        x: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: "power2.out"
-      }, {
-        trigger: infoSectionsRef.current,
-        start: 'top 70%'
-      });
+      // Use a class-based selector instead of tailwind's utility classes directly
+      const infoCards = infoSectionsRef.current.querySelectorAll('.contact-card');
+      
+      // Use a simpler animation approach without ScrollTrigger
+      gsap.fromTo(infoCards,
+        { opacity: 0, scale: 0.9, y: 30 },
+        { 
+          opacity: 1, 
+          scale: 1, 
+          y: 0, 
+          duration: 0.8, 
+          stagger: 0.2,
+          delay: 0.8
+        }
+      );
     }
     
-    // FAQ animations
-    if (faqItemsRef.current) {
-      const faqItems = faqItemsRef.current.querySelectorAll(':scope > div');
-      createScrollAnimation(faqItems, {
-        y: 40,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.15,
-        ease: "back.out(1.2)"
-      }, {
-        trigger: faqItemsRef.current,
-        start: 'top 75%'
-      });
-    }
-
     // Clean up
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
 
+  // Handle form interactions and animations
+  useEffect(() => {
+    if (!formRef.current) return;
+    
+    // Add hover effects to form inputs
+    const formInputs = formRef.current.querySelectorAll('input, textarea');
+    formInputs.forEach(input => {
+      // Scale up effect on focus
+      input.addEventListener('focus', () => {
+        gsap.to(input, {
+          scale: 1.02,
+          borderColor: 'rgba(42, 157, 143, 0.8)',
+          boxShadow: '0 0 10px rgba(42, 157, 143, 0.3)',
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      });
+      
+      // Reset on blur
+      input.addEventListener('blur', () => {
+        gsap.to(input, {
+          scale: 1,
+          borderColor: 'rgba(42, 157, 143, 0.3)',
+          boxShadow: 'none',
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      });
+    });
+    
+    // Add pulse animation to submit button
+    const submitButton = formRef.current.querySelector('button[type="submit"]');
+    if (submitButton) {
+      formButtonRef.current = submitButton;
+      
+      // Subtle pulse animation
+      const pulseAnimation = gsap.timeline({ repeat: -1, yoyo: true });
+      pulseAnimation.to(submitButton, {
+        boxShadow: '0 0 15px rgba(42, 157, 143, 0.5)',
+        scale: 1.03,
+        duration: 1.5,
+        ease: 'sine.inOut'
+      });
+      
+      // Stronger pulse on hover
+      submitButton.addEventListener('mouseenter', () => {
+        pulseAnimation.pause();
+        gsap.to(submitButton, {
+          backgroundColor: '#34c1b2',
+          scale: 1.05,
+          boxShadow: '0 0 20px rgba(42, 157, 143, 0.7)',
+          duration: 0.3
+        });
+      });
+      
+      submitButton.addEventListener('mouseleave', () => {
+        gsap.to(submitButton, {
+          backgroundColor: '#2a9d8f',
+          scale: 1,
+          boxShadow: 'none',
+          duration: 0.3,
+          onComplete: () => pulseAnimation.play()
+        });
+      });
+    }
+    
+    // Add interactive animations to contact cards
+    const contactCards = document.querySelectorAll('.contact-card');
+    contactCards.forEach(card => {
+      const hexagon = card.querySelector('svg');
+      const icon = card.querySelector('.w-8.h-8');
+      
+      card.addEventListener('mouseenter', () => {
+        gsap.to(hexagon, {
+          rotation: 30,
+          scale: 1.2,
+          opacity: 0.3,
+          duration: 0.5
+        });
+        
+        gsap.to(icon, {
+          scale: 1.2,
+          backgroundColor: '#34c1b2',
+          duration: 0.3
+        });
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        gsap.to(hexagon, {
+          rotation: 0,
+          scale: 1,
+          opacity: 0.2,
+          duration: 0.5
+        });
+        
+        gsap.to(icon, {
+          scale: 1,
+          backgroundColor: '#2a9d8f',
+          duration: 0.3
+        });
+      });
+    });
+    
+    return () => {
+      // Clean up event listeners
+      formInputs.forEach(input => {
+        input.removeEventListener('focus', () => {});
+        input.removeEventListener('blur', () => {});
+      });
+      
+      if (submitButton) {
+        submitButton.removeEventListener('mouseenter', () => {});
+        submitButton.removeEventListener('mouseleave', () => {});
+      }
+      
+      contactCards.forEach(card => {
+        card.removeEventListener('mouseenter', () => {});
+        card.removeEventListener('mouseleave', () => {});
+      });
+    };
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Form submission logic would go here
-    alert('Thank you for your message! We will respond shortly.');
+    
+    // Create a successful submit animation
+    const submitButton = formButtonRef.current;
+    const formContents = formRef.current;
+    
+    if (submitButton && formContents) {
+      // First animate the button
+      gsap.timeline()
+        .to(submitButton, {
+          scale: 0.95,
+          duration: 0.1,
+        })
+        .to(submitButton, {
+          scale: 1.1,
+          duration: 0.2,
+        })
+        .to(submitButton, {
+          scale: 1,
+          duration: 0.2,
+        });
+      
+      // Then animate the form with a success message
+      gsap.timeline()
+        .to(formContents, {
+          opacity: 0.5,
+          y: 10,
+          duration: 0.3,
+          delay: 0.5
+        })
+        .to(formContents, {
+          opacity: 1,
+          y: 0,
+          duration: 0.3,
+          onComplete: () => {
+            alert('Thank you for your message! We will respond shortly.');
+          }
+        });
+    } else {
+      alert('Thank you for your message! We will respond shortly.');
+    }
   };
 
   return (
     <>
-      {/* Hero Section with Three.js canvas */}
-      <div className="hero-container bg-gradient-to-b from-[#1a2b21] to-[#2a3b31] relative h-[60vh] min-h-[500px] overflow-hidden">
+      {/* Hero Section */}
+      <div className="hero-container bg-gradient-to-b from-[#1a2b21] to-[#2a3b31] relative h-[60vh] min-h-[500px]">
+        <div className="absolute inset-0 bg-[#1a2b21]/60 z-10"></div>
         <canvas ref={sceneRef} id="contact-scene" className="absolute inset-0 w-full h-full"></canvas>
         
-        {/* Floating hexagons decoration */}
-        <div className="absolute top-[10%] left-[10%] w-[100px] h-[115px] opacity-80 z-10 animate-[float_8s_ease-in-out_infinite]">
-          <svg viewBox="0 0 100 115" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" fill="#2a9d8f" fillOpacity="0.2" stroke="#c2c8c4" strokeWidth="2"/>
-          </svg>
-        </div>
-        <div className="absolute top-[15%] right-[15%] w-[100px] h-[115px] opacity-80 z-10 animate-[float_9s_ease-in-out_infinite_reverse]">
-          <svg viewBox="0 0 100 115" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" fill="#c2c8c4" fillOpacity="0.2" stroke="#c2c8c4" strokeWidth="2"/>
-          </svg>
-        </div>
-        <div className="absolute bottom-[20%] left-[20%] w-[100px] h-[115px] opacity-80 z-10 animate-[float_10s_ease-in-out_infinite]">
-          <svg viewBox="0 0 100 115" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" fill="#1a2b21" fillOpacity="0.2" stroke="#c2c8c4" strokeWidth="2"/>
-          </svg>
-        </div>
-        <div className="absolute bottom-[10%] right-[10%] w-[100px] h-[115px] opacity-80 z-10 animate-[float_7s_ease-in-out_infinite_reverse]">
-          <svg viewBox="0 0 100 115" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" fill="#2a9d8f" fillOpacity="0.2" stroke="#c2c8c4" strokeWidth="2"/>
-          </svg>
-        </div>
-        
-        <div className="container mx-auto px-4 h-full flex items-center hero-content relative z-20">
-          <div className="max-w-3xl text-white">
-            <h1 ref={heroTitleRef} className="text-4xl md:text-5xl font-bold mb-4 hero-title">Connect With Yuca Media</h1>
-            <p ref={heroSubtitleRef} className="text-xl mb-8 text-[#c2c8c4] hero-subtitle">
+        <div className="container mx-auto px-4 h-full flex items-center relative z-20">
+          <div className="max-w-4xl text-white backdrop-blur-sm bg-[#1a2b21]/50 p-8 rounded-lg shadow-lg border border-[#2a9d8f]/20">
+            <h1 
+              ref={heroTitleRef} 
+              className="text-4xl md:text-5xl font-bold mb-4 text-white"
+              style={{ textShadow: '0 0 20px rgba(42, 157, 143, 0.7)' }}
+            >
+              Connect With Yuca Media
+            </h1>
+            <p 
+              ref={heroSubtitleRef} 
+              className="text-xl mb-8 text-white"
+              style={{ textShadow: '0 0 20px rgba(42, 157, 143, 0.7)' }}
+            >
               Get in touch with our team to explore how blockchain technology can empower your creative projects.
             </p>
           </div>
         </div>
       </div>
       
-      {/* Contact Form Section */}
-      <section className="py-16">
+      {/* 3D Envelope Section */}
+      <div className="relative z-20 -mt-16">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Form */}
-            <div className="bg-white p-8 rounded-lg shadow-lg">
-              <h2 className="text-3xl font-bold mb-8 text-[#1a2b21]">Send us a Message</h2>
-              
-              <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
-                <div>
-                  <label htmlFor="name" className="block mb-2 font-medium text-[#1a2b21]">Full Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    name="name" 
-                    required 
-                    placeholder="Your name"
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2a9d8f] focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="email" className="block mb-2 font-medium text-[#1a2b21]">Email Address</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    required 
-                    placeholder="your.email@example.com"
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2a9d8f] focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="interest" className="block mb-2 font-medium text-[#1a2b21]">I'm interested in</label>
-                  <select 
-                    id="interest" 
-                    name="interest" 
-                    defaultValue=""
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2a9d8f] focus:border-transparent"
-                  >
-                    <option value="" disabled>Select your interest</option>
-                    <option value="blockchain">Blockchain Solutions</option>
-                    <option value="cryptolottery">CryptoLottery</option>
-                    <option value="studios">Yuca Studios</option>
-                    <option value="partnership">Partnership Opportunities</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label htmlFor="message" className="block mb-2 font-medium text-[#1a2b21]">Your Message</label>
-                  <textarea 
-                    id="message" 
-                    name="message" 
-                    rows="5" 
-                    required 
-                    placeholder="Share details about your project or inquiry..."
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2a9d8f] focus:border-transparent"
-                  ></textarea>
-                </div>
-                
-                <button 
-                  type="submit"
-                  className="w-full bg-[#2a9d8f] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#238f83] transition-all"
-                >
-                  Send Message
-                </button>
-              </form>
-            </div>
-            
-            {/* Contact Info */}
-            <div ref={infoSectionsRef} className="lg:pl-8">
-              <h2 className="text-3xl font-bold mb-8 text-[#1a2b21]">Get in Touch</h2>
-              
-              <div className="mb-12">
-                <h3 className="text-xl font-bold mb-4 text-[#2a9d8f]">Our Locations</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white p-6 rounded-lg shadow">
-                    <h4 className="font-bold text-lg mb-2">San Francisco</h4>
-                    <p className="text-gray-600">
-                      123 Tech Boulevard<br />
-                      San Francisco, CA 94107<br />
-                      United States
-                    </p>
-                  </div>
-                  
-                  <div className="bg-white p-6 rounded-lg shadow">
-                    <h4 className="font-bold text-lg mb-2">Virtual Office</h4>
-                    <p className="text-gray-600">
-                      Available for meetings 24/7<br />
-                      in the Metaverse<br />
-                      <a href="#" className="text-[#2a9d8f] hover:underline">Request Virtual Meeting</a>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mb-12">
-                <h3 className="text-xl font-bold mb-4 text-[#2a9d8f]">Contact Details</h3>
-                
-                <div className="bg-white p-6 rounded-lg shadow mb-6">
-                  <h4 className="font-bold text-lg mb-2">General Inquiries</h4>
-                  <p className="text-gray-600 mb-2">
-                    <span className="font-bold">Email:</span> info@yucamedia.com
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-bold">Phone:</span> +1 (555) 123-4567
-                  </p>
-                </div>
-                
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h4 className="font-bold text-lg mb-2">Partnership Opportunities</h4>
-                  <p className="text-gray-600 mb-2">
-                    <span className="font-bold">Email:</span> partnerships@yucamedia.com
-                  </p>
-                  <p className="text-gray-600">
-                    <span className="font-bold">Phone:</span> +1 (555) 987-6543
-                  </p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-xl font-bold mb-4 text-[#2a9d8f]">Connect With Us</h3>
-                
-                <div className="flex space-x-4">
-                  <a href="#" className="bg-[#1a2b21] text-white p-3 rounded-full hover:bg-opacity-90 transition-all">
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
-                    </svg>
-                  </a>
-                  
-                  <a href="#" className="bg-[#1a2b21] text-white p-3 rounded-full hover:bg-opacity-90 transition-all">
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914a.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"></path>
-                    </svg>
-                  </a>
-                  
-                  <a href="#" className="bg-[#1a2b21] text-white p-3 rounded-full hover:bg-opacity-90 transition-all">
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
-                    </svg>
-                  </a>
-                  
-                  <a href="#" className="bg-[#1a2b21] text-white p-3 rounded-full hover:bg-opacity-90 transition-all">
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
-                    </svg>
-                  </a>
-                </div>
-              </div>
+          <div className="max-w-lg mx-auto h-64 relative">
+            <div ref={envelopeContainerRef} className="w-full h-full">
+              <EnvelopeModel />
             </div>
           </div>
         </div>
-      </section>
+      </div>
       
-      {/* FAQ Section */}
-      <section className="py-16 bg-[#f5f8f6]">
+      {/* Contact Form Section */}
+      <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center text-[#1a2b21]">Frequently Asked Questions</h2>
-          
-          <div ref={faqItemsRef} className="max-w-3xl mx-auto space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-bold mb-2 text-[#2a9d8f]">What is Yuca Media's mission?</h3>
-              <p>
-                Yuca Media bridges the gap between traditional entertainment and Web3 technology, creating new opportunities for independent artists and filmmakers through blockchain. Our mission is to democratize media production and distribution while ensuring creators are fairly compensated for their work.
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <div ref={formRef} className="bg-[#1a2b21]/90 p-8 rounded-lg shadow-lg">
+              <h2 className="text-2xl font-bold text-white mb-6">Send Us a Message</h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-6">
+                  <label htmlFor="name" className="block text-[#c2c8c4] mb-2">Name</label>
+                  <input 
+                    type="text" 
+                    id="name" 
+                    className="w-full bg-[#273b2e] border border-[#2a9d8f]/30 rounded-md p-3 text-white"
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="email" className="block text-[#c2c8c4] mb-2">Email</label>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    className="w-full bg-[#273b2e] border border-[#2a9d8f]/30 rounded-md p-3 text-white"
+                    placeholder="Your email address"
+                    required
+                  />
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="message" className="block text-[#c2c8c4] mb-2">Message</label>
+                  <textarea 
+                    id="message" 
+                    rows="5" 
+                    className="w-full bg-[#273b2e] border border-[#2a9d8f]/30 rounded-md p-3 text-white"
+                    placeholder="Tell us about your project or idea"
+                    required
+                  ></textarea>
+                </div>
+                <div>
+                  <button 
+                    type="submit" 
+                    className="bg-[#2a9d8f] text-white py-3 px-6 rounded-md hover:bg-opacity-90 transition-all"
+                  >
+                    Send Message
+                  </button>
+                </div>
+              </form>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-bold mb-2 text-[#2a9d8f]">How does the CryptoLottery work?</h3>
-              <p>
-                Our CryptoLottery uses blockchain technology to create transparent, verifiably fair lottery systems where all participants can audit the selection process. A percentage of proceeds goes directly to funding independent film and media projects, creating a sustainable funding model for creators.
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-bold mb-2 text-[#2a9d8f]">What services does Yuca Studios offer?</h3>
-              <p>
-                Yuca Studios provides end-to-end production services for independent filmmakers, including funding, production resources, post-production facilities, and blockchain-based distribution platforms. We specialize in helping creators maintain ownership of their intellectual property while reaching global audiences.
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-bold mb-2 text-[#2a9d8f]">How can I partner with Yuca Media?</h3>
-              <p>
-                We're always looking for innovative partners who share our vision for the future of media. Whether you're a creator, investor, technology provider, or distribution platform, reach out through our contact form to start a conversation about potential collaboration opportunities.
-              </p>
+            {/* Contact Information */}
+            <div ref={infoSectionsRef} className="space-y-8">
+              <div className="bg-[#1a2b21]/80 p-6 rounded-lg shadow-md relative overflow-hidden contact-card">
+                <div className="absolute top-0 right-0 w-24 h-24 opacity-20">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-[#2a9d8f]">
+                    <path fill="currentColor" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" />
+                  </svg>
+                </div>
+                
+                <h3 className="text-xl font-bold text-white mb-4">Our Location</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 mr-3">
+                      <div className="w-8 h-8 flex items-center justify-center bg-[#2a9d8f] rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="location-info">
+                      <h4 className="font-medium text-white">Virtual Office</h4>
+                      <p className="text-[#c2c8c4]">We operate digitally from across the globe,<br />connecting talent without boundaries.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-[#1a2b21]/80 p-6 rounded-lg shadow-md relative overflow-hidden contact-card">
+                <div className="absolute top-0 right-0 w-24 h-24 opacity-20">
+                  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-[#2a9d8f]">
+                    <path fill="currentColor" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" />
+                  </svg>
+                </div>
+                
+                <h3 className="text-xl font-bold text-white mb-4">Contact Info</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 mr-3">
+                      <div className="w-8 h-8 flex items-center justify-center bg-[#2a9d8f] rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="contact-info">
+                      <h4 className="font-medium text-white">Email</h4>
+                      <p className="text-[#c2c8c4]">principal@yuccamedia.io</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 mr-3">
+                      <div className="w-8 h-8 flex items-center justify-center bg-[#2a9d8f] rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="contact-info">
+                      <h4 className="font-medium text-white">Phone</h4>
+                      <p className="text-[#c2c8c4]">+1 (323) 401-4248</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

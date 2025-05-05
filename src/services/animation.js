@@ -3,8 +3,8 @@
  * This module handles GSAP setup, ScrollTrigger registration, and animation utilities
  */
 
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+// Import from our central GSAP configuration to ensure plugins are registered
+import { gsap, ScrollTrigger, ensureScrollTriggerRegistered } from './gsap-config';
 import { debugGSAP } from './debugging';
 
 // Initialize and register GSAP plugins
@@ -24,24 +24,26 @@ export const initializeGSAP = () => {
       return false;
     }
     
-    // Register ScrollTrigger plugin if it's not already registered
-    if (!gsap.plugins || !gsap.plugins.scrollTrigger) {
-      if (typeof ScrollTrigger === 'undefined') {
-        console.error('❌ ScrollTrigger plugin not found. Make sure it is imported correctly.');
-      } else {
-        gsap.registerPlugin(ScrollTrigger);
-        console.log('✅ ScrollTrigger successfully registered with GSAP');
-      }
-    } else {
-      console.log('✅ ScrollTrigger already registered with GSAP');
-    }
+    // Ensure ScrollTrigger is registered using our utility function
+    const scrollTriggerRegistered = ensureScrollTriggerRegistered();
     
-    // Set GSAP defaults
-    gsap.defaults({
-      ease: 'power2.out',
-      duration: 0.8,
-      overwrite: 'auto'
-    });
+    if (scrollTriggerRegistered) {
+      // Verify registration was successful
+      if (gsap.plugins && gsap.plugins.scrollTrigger) {
+        console.log('✅ ScrollTrigger successfully registered with GSAP');
+      } else {
+        // This should not happen since ensureScrollTriggerRegistered should have caught it
+        console.warn('⚠️ ScrollTrigger registration verification failed');
+        
+        // Try one more time with a direct registration
+        try {
+          gsap.registerPlugin(ScrollTrigger);
+          console.log('🔄 ScrollTrigger re-registered directly');
+        } catch (innerError) {
+          console.error('❌ Direct ScrollTrigger registration failed:', innerError);
+        }
+      }
+    }
     
     gsapInitialized = true;
     return true;
@@ -93,17 +95,14 @@ export const createScrollAnimation = (target, animationOptions = {}, triggerOpti
   // Ensure GSAP is initialized first
   initializeGSAP();
   
-  // Double-check ScrollTrigger is available
-  // Import ScrollTrigger if it's not already registered
   try {
+    // Force register ScrollTrigger to ensure it's available (redundant safety check)
+    ensureScrollTriggerRegistered();
+    
+    // Check if ScrollTrigger is now properly registered
     if (!gsap.plugins || !gsap.plugins.scrollTrigger) {
-      if (typeof ScrollTrigger !== 'undefined') {
-        gsap.registerPlugin(ScrollTrigger);
-        console.log('📌 Late registration of ScrollTrigger successful');
-      } else {
-        console.error('ScrollTrigger is not registered! Using fallback animation without scroll trigger');
-        return fadeIn(target, animationOptions);
-      }
+      console.warn('⚠️ ScrollTrigger plugin not detected despite registration attempts! Using fallback animation');
+      return fadeIn(target, animationOptions);
     }
     
     const defaults = {
@@ -125,8 +124,20 @@ export const createScrollAnimation = (target, animationOptions = {}, triggerOpti
     const { debug, ...cleanAnimationOptions } = { ...defaults, ...animationOptions };
     const triggerConfig = { ...triggerDefaults, ...triggerOptions };
     
+    // Verify the target exists in the DOM before creating the animation
+    if (typeof target === 'string' && !document.querySelector(target) && !document.querySelectorAll(target).length) {
+      console.warn(`⚠️ Target "${target}" not found in DOM for scroll animation`);
+    }
+    
     // Create the animation with ScrollTrigger
     const config = { ...cleanAnimationOptions, scrollTrigger: triggerConfig };
+    
+    // Debug the configuration before creating the animation
+    if (debug) {
+      console.log('🔍 ScrollTrigger animation config:', config);
+    }
+    
+    // Create the animation
     const animation = gsap.from(target, config);
     
     if (debug) {
@@ -135,7 +146,10 @@ export const createScrollAnimation = (target, animationOptions = {}, triggerOpti
     
     return animation;
   } catch (error) {
-    console.error('Error creating scroll animation:', error);
+    console.error('❌ Error creating scroll animation:', error);
+    console.error('Error details:', error.message);
+    // Fallback to a non-scroll animation
+    console.log('🔄 Using fallback animation without ScrollTrigger');
     return fadeIn(target, animationOptions);
   }
 };
