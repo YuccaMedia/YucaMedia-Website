@@ -1,45 +1,47 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-// Import from our new GSAP helper utilities first
-import { 
-  ensureScrollTriggerIsRegistered,
-  createBasicAnimation,
-  createStaggeredAnimation
-} from '../utils/gsap-helper';
-
-// Import gsap directly to ensure correct sequencing
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-
-// Import animation services - these may use the ScrollTrigger plugin
-import { 
-  initializeGSAP, 
-  createScrollAnimation, 
-  fadeIn,
-  clearScrollTriggers 
-} from '../services/animation';
 
 // Import components
 import ThreeScene from '../components/ThreeScene';
 import ParticleSystem from '../components/ParticleSystem';
 import ServiceCard from '../components/ServiceCard';
 
-// Force ScrollTrigger registration immediately and check if it works
-let scrollTriggerIsAvailable = false;
-try {
-  // Register ScrollTrigger at the component level
-  gsap.registerPlugin(ScrollTrigger);
+// Import from our centralized GSAP configuration
+import { 
+  gsap, 
+  ScrollTrigger, 
+  isScrollTriggerAvailable,
+  forceScrollTriggerRegistration 
+} from '../lib/gsap';
+
+// Import animation services that use our centralized GSAP config
+import { 
+  initializeGSAP, 
+  createScrollAnimation, 
+  fadeIn,
+  clearScrollTriggers,
+  staggerAnimation as createStaggeredAnimation
+} from '../services/animation';
+
+// Basic animation helper for fallback
+const createBasicAnimation = (target, options = {}) => {
+  const defaults = {
+    opacity: 0,
+    y: 30,
+    duration: 0.8,
+    ease: "power2.out"
+  };
   
-  // Use our helper utility for thorough registration
-  scrollTriggerIsAvailable = ensureScrollTriggerIsRegistered();
-  
-  console.log('📌 Services component: ScrollTrigger available =', scrollTriggerIsAvailable);
-} catch (error) {
-  console.error('📌 Services component: Error registering ScrollTrigger:', error);
-}
+  return gsap.from(target, { ...defaults, ...options });
+};
 
 const Services = () => {
+  // Track our ScrollTrigger instances to ensure proper cleanup - moved into component scope
+  const scrollTriggersRef = useRef([]);
+  
+  // Use state to track ScrollTrigger availability within the component
+  const [scrollTriggerIsAvailable, setScrollTriggerIsAvailable] = useState(false);
+  
   // References for animation elements
   const mainTitleRef = useRef(null);
   const subTitleRef = useRef(null);
@@ -47,187 +49,299 @@ const Services = () => {
   const blockchainSectionRef = useRef(null);
   const ctaSectionRef = useRef(null);
 
-  // Initialize animations
+  // First useEffect: Initialize GSAP and ScrollTrigger only
   useEffect(() => {
-    // Try to ensure ScrollTrigger is registered again within the effect
-    try {
-      // Use our helper utility for thorough registration
-      scrollTriggerIsAvailable = ensureScrollTriggerIsRegistered();
-      
-      // Also initialize GSAP
-      const initSuccess = initializeGSAP();
-      
-      console.log('🔍 Services useEffect: ScrollTrigger available =', scrollTriggerIsAvailable);
-      console.log('🔍 Services useEffect: GSAP initialized =', initSuccess);
-    } catch (error) {
-      console.error('❌ Services useEffect: Error initializing GSAP:', error);
+    console.log('🔄 Services: Initial GSAP and ScrollTrigger setup');
+    
+    // Force register ScrollTrigger multiple times to ensure it's available
+    // This helps with React StrictMode's double rendering
+    for (let i = 0; i < 2; i++) {
+      forceScrollTriggerRegistration();
     }
     
-    // Hero section animations
-    if (mainTitleRef.current && subTitleRef.current) {
-      try {
-        // Try to use our animation service first
-        fadeIn(mainTitleRef.current, {
-          y: 30,
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.2
-        });
-        
-        fadeIn(subTitleRef.current, {
-          y: 30,
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.4
-        });
-      } catch (error) {
-        console.warn('⚠️ Falling back to basic animations for hero section:', error);
-        
-        // Fall back to our basic animation utility
-        createBasicAnimation(mainTitleRef.current, {
-          y: 30,
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.2
-        });
-        
-        createBasicAnimation(subTitleRef.current, {
-          y: 30,
-          duration: 1,
-          ease: "power3.out",
-          delay: 0.4
-        });
-      }
-    }
+    // Initialize GSAP
+    initializeGSAP();
     
-    // Service cards animations
-    if (serviceCardsRef.current) {
-      try {
-        const cards = serviceCardsRef.current.querySelectorAll('.service-card');
+    // Give it a moment to fully initialize, then check availability
+    setTimeout(() => {
+      // Direct check, not dependent on previous checks
+      const isAvailable = isScrollTriggerAvailable();
+      console.log('🔍 ScrollTrigger availability after delay:', isAvailable);
+      
+      if (!isAvailable) {
+        console.warn('⚠️ ScrollTrigger still not available, forcing registration again...');
+        // One last attempt
+        forceScrollTriggerRegistration();
         
-        if (scrollTriggerIsAvailable) {
-          // Use scroll-based animations if ScrollTrigger is available
-          createScrollAnimation(cards, {
-            y: 50,
-            stagger: 0.2,
-            ease: "power2.out"
-          }, {
-            trigger: serviceCardsRef.current,
-            start: 'top 75%'
-          });
-        } else {
-          // Fall back to staggered animations without ScrollTrigger
-          console.log('⚠️ Using fallback animations for service cards');
-          createStaggeredAnimation(cards, {
-            y: 50,
-            stagger: 0.2,
-            delay: 0.6
-          });
-        }
-      } catch (error) {
-        console.error('❌ Error animating service cards:', error);
-        
-        // Last resort fallback
-        try {
-          const cards = serviceCardsRef.current.querySelectorAll('.service-card');
-          gsap.from(cards, {
-            opacity: 0,
-            y: 50,
-            stagger: 0.2,
-            duration: 0.8,
-            delay: 0.6
-          });
-        } catch (finalError) {
-          console.error('💥 Final fallback for service cards also failed:', finalError);
-        }
+        // Check again after another small delay
+        setTimeout(() => {
+          const finalCheck = isScrollTriggerAvailable();
+          console.log('🔍 Final ScrollTrigger availability check:', finalCheck);
+          setScrollTriggerIsAvailable(finalCheck);
+        }, 100);
+      } else {
+        setScrollTriggerIsAvailable(true);
       }
-    }
-
-    // Blockchain section animations
-    if (blockchainSectionRef.current) {
-      try {
-        const items = blockchainSectionRef.current.querySelectorAll('.animate-item');
-        
-        if (scrollTriggerIsAvailable) {
-          createScrollAnimation(items, {
-            x: -50,
-            stagger: 0.2,
-            ease: "power2.out"
-          }, {
-            trigger: blockchainSectionRef.current,
-            start: 'top 75%'
-          });
-        } else {
-          // Fall back to staggered animations without ScrollTrigger
-          createStaggeredAnimation(items, {
-            x: -50,
-            stagger: 0.2,
-            delay: 1
-          });
-        }
-      } catch (error) {
-        console.error('❌ Error animating blockchain section:', error);
-        
-        // Last resort fallback
-        try {
-          const items = blockchainSectionRef.current.querySelectorAll('.animate-item');
-          gsap.from(items, {
-            opacity: 0,
-            x: -50,
-            stagger: 0.2,
-            duration: 0.8,
-            delay: 1
-          });
-        } catch (finalError) {
-          console.error('💥 Final fallback for blockchain section also failed:', finalError);
-        }
-      }
-    }
-
-    // CTA section animations
-    if (ctaSectionRef.current) {
-      try {
-        if (scrollTriggerIsAvailable) {
-          createScrollAnimation(ctaSectionRef.current, {
-            y: 30,
-            ease: "power2.out"
-          }, {
-            trigger: ctaSectionRef.current,
-            start: 'top 80%'
-          });
-        } else {
-          // Fall back to basic animation without ScrollTrigger
-          createBasicAnimation(ctaSectionRef.current, {
-            y: 30,
-            delay: 1.2
-          });
-        }
-      } catch (error) {
-        console.error('❌ Error animating CTA section:', error);
-        
-        // Last resort fallback
-        try {
-          gsap.from(ctaSectionRef.current, {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-            delay: 1.2
-          });
-        } catch (finalError) {
-          console.error('💥 Final fallback for CTA section also failed:', finalError);
-        }
-      }
-    }
-
-    // Clean up
+    }, 150); // Increased delay
+    
+    // Cleanup function
     return () => {
       try {
+        // First, kill the specific instances we've stored
+        if (scrollTriggersRef.current.length > 0) {
+          console.log(`🧹 Cleaning up ${scrollTriggersRef.current.length} manually tracked ScrollTrigger instances`);
+          scrollTriggersRef.current.forEach(trigger => {
+            try {
+              if (trigger && typeof trigger.kill === 'function') {
+                trigger.kill();
+              }
+            } catch (innerError) {
+              console.warn('⚠️ Error killing specific trigger:', innerError);
+            }
+          });
+        }
+        
+        // Then use the global cleanup as a safety net
         clearScrollTriggers();
       } catch (error) {
         console.warn('⚠️ Issue during ScrollTrigger cleanup:', error);
       }
     };
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
+  
+  // Second useEffect: Handle animations, depends on scrollTriggerIsAvailable
+  useEffect(() => {
+    // Skip on initial render if scrollTriggerIsAvailable is false
+    if (!scrollTriggerIsAvailable) {
+      console.log('⏳ Waiting for ScrollTrigger to be available before setting up animations');
+      return;
+    }
+    
+    console.log('🎯 ScrollTrigger is available! Setting up scroll animations');
+    
+    // Force register ScrollTrigger one more time before creating animations
+    forceScrollTriggerRegistration();
+    
+    const setupAnimations = () => {
+      // Double-check ScrollTrigger availability directly, rather than relying on state
+      const isSTAvailable = isScrollTriggerAvailable();
+      console.log('🔍 Direct ScrollTrigger check before animations:', isSTAvailable);
+      
+      // Hero section animations
+      if (mainTitleRef.current && subTitleRef.current) {
+        try {
+          // Try to use our animation service first
+          fadeIn(mainTitleRef.current, {
+            y: 30,
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.2
+          });
+          
+          fadeIn(subTitleRef.current, {
+            y: 30,
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.4
+          });
+        } catch (error) {
+          console.warn('⚠️ Falling back to basic animations for hero section:', error);
+          
+          // Fall back to our basic animation utility
+          createBasicAnimation(mainTitleRef.current, {
+            y: 30,
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.2
+          });
+          
+          createBasicAnimation(subTitleRef.current, {
+            y: 30,
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.4
+          });
+        }
+      }
+      
+      // Service cards animations
+      if (serviceCardsRef.current) {
+        try {
+          const cards = serviceCardsRef.current.querySelectorAll('.service-card');
+          
+          if (scrollTriggerIsAvailable) {
+            console.log('🎯 Creating scroll animation for service cards using new direct approach');
+            // Use our new direct ScrollTrigger approach
+            const result = createScrollAnimation(cards, {
+              opacity: 0,
+              y: 50,
+              stagger: 0.2,
+              ease: "power2.out"
+            }, {
+              trigger: serviceCardsRef.current,
+              start: 'top 75%'
+            });
+            
+            // Store the ScrollTrigger instance for cleanup
+            if (result && result.trigger) {
+              scrollTriggersRef.current.push(result.trigger);
+              console.log('✅ Successfully created and stored ScrollTrigger for service cards');
+            }
+          } else {
+            // Fall back to staggered animations without ScrollTrigger
+            console.log('⚠️ Using fallback animations for service cards');
+            createStaggeredAnimation(cards, {
+              y: 50,
+              stagger: 0.2,
+              delay: 0.6
+            });
+          }
+        } catch (error) {
+          console.error('❌ Error animating service cards:', error);
+          console.error('Error details:', error.message);
+          
+          // Last resort fallback
+          try {
+            const cards = serviceCardsRef.current.querySelectorAll('.service-card');
+            gsap.from(cards, {
+              opacity: 0,
+              y: 50,
+              stagger: 0.2,
+              duration: 0.8,
+              delay: 0.6
+            });
+          } catch (finalError) {
+            console.error('💥 Final fallback for service cards also failed:', finalError);
+          }
+        }
+      }
+
+      // Blockchain section animations
+      if (blockchainSectionRef.current) {
+        try {
+          const items = blockchainSectionRef.current.querySelectorAll('.animate-item');
+          
+          if (scrollTriggerIsAvailable) {
+            console.log('🎯 Creating scroll animation for blockchain section using new direct approach');
+            // Use our new direct ScrollTrigger approach
+            const result = createScrollAnimation(items, {
+              opacity: 0,
+              x: -50,
+              stagger: 0.2,
+              ease: "power2.out"
+            }, {
+              trigger: blockchainSectionRef.current,
+              start: 'top 75%'
+            });
+            
+            // Store the ScrollTrigger instance for cleanup
+            if (result && result.trigger) {
+              scrollTriggersRef.current.push(result.trigger);
+              console.log('✅ Successfully created and stored ScrollTrigger for blockchain section');
+            }
+          } else {
+            // Fall back to staggered animations without ScrollTrigger
+            console.log('⚠️ Using fallback animations for blockchain section');
+            createStaggeredAnimation(items, {
+              x: -50,
+              stagger: 0.2,
+              delay: 1
+            });
+          }
+        } catch (error) {
+          console.error('❌ Error animating blockchain section:', error);
+          console.error('Error details:', error.message);
+          
+          // Last resort fallback
+          try {
+            const items = blockchainSectionRef.current.querySelectorAll('.animate-item');
+            gsap.from(items, {
+              opacity: 0,
+              x: -50,
+              stagger: 0.2,
+              duration: 0.8,
+              delay: 1
+            });
+          } catch (finalError) {
+            console.error('💥 Final fallback for blockchain section also failed:', finalError);
+          }
+        }
+      }
+
+      // CTA section animations
+      if (ctaSectionRef.current) {
+        try {
+          if (scrollTriggerIsAvailable) {
+            console.log('🎯 Creating scroll animation for CTA section using new direct approach');
+            // Use our new direct ScrollTrigger approach
+            const result = createScrollAnimation(ctaSectionRef.current, {
+              opacity: 0,
+              y: 30,
+              ease: "power2.out"
+            }, {
+              trigger: ctaSectionRef.current,
+              start: 'top 80%'
+            });
+            
+            // Store the ScrollTrigger instance for cleanup
+            if (result && result.trigger) {
+              scrollTriggersRef.current.push(result.trigger);
+              console.log('✅ Successfully created and stored ScrollTrigger for CTA section');
+            }
+          } else {
+            // Fall back to basic animation without ScrollTrigger
+            console.log('⚠️ Using fallback animations for CTA section');
+            createBasicAnimation(ctaSectionRef.current, {
+              y: 30,
+              delay: 1.2
+            });
+          }
+        } catch (error) {
+          console.error('❌ Error animating CTA section:', error);
+          console.error('Error details:', error.message);
+          
+          // Last resort fallback
+          try {
+            gsap.from(ctaSectionRef.current, {
+              opacity: 0,
+              y: 30,
+              duration: 0.8,
+              delay: 1.2
+            });
+          } catch (finalError) {
+            console.error('💥 Final fallback for CTA section also failed:', finalError);
+          }
+        }
+      }
+    };
+    
+    // Use a small timeout to allow state updates to complete
+    setTimeout(setupAnimations, 100);
+
+    // Clean up
+    return () => {
+      try {
+        // First, kill the specific instances we've stored
+        if (scrollTriggersRef.current.length > 0) {
+          console.log(`🧹 Cleaning up ${scrollTriggersRef.current.length} manually tracked ScrollTrigger instances`);
+          scrollTriggersRef.current.forEach(trigger => {
+            try {
+              if (trigger && typeof trigger.kill === 'function') {
+                trigger.kill();
+              }
+            } catch (innerError) {
+              console.warn('⚠️ Error killing specific trigger:', innerError);
+            }
+          });
+        }
+        
+        // Then use the global cleanup as a safety net
+        clearScrollTriggers();
+      } catch (error) {
+        console.warn('⚠️ Issue during ScrollTrigger cleanup:', error);
+      }
+    };
+  }, [scrollTriggerIsAvailable]);
 
   // Define services data
   const services = [
