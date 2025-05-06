@@ -29,8 +29,23 @@ const ThreeScene = ({ activeService = null }) => {
     // Add fog to create depth
     threeJSScene.scene.fog = new THREE.FogExp2(0x1a2b21, 0.035);
 
-    // Create service-specific 3D models with enhanced positioning
+    // Create service-specific 3D models with proper positioning
     createServiceModels(threeJSScene.scene);
+    
+    // Store original positions and scales for service models for animation
+    threeJSScene.scene.children.forEach(child => {
+      if (child.type === 'Group' && child.name.includes('model')) {
+        const serviceType = child.name.split('-')[0];
+        child.userData = {
+          ...child.userData,
+          originalY: child.position.y,
+          originalScale: child.scale.x,
+          serviceType: serviceType
+        };
+        
+        console.log(`Service model created: ${child.name} at position ${JSON.stringify(child.position)}`);
+      }
+    });
 
     // Add some ambient particles to scene
     addAmbientParticles(threeJSScene.scene);

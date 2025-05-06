@@ -449,11 +449,11 @@ const Services = () => {
 
   return (
     <>
-      {/* 3D Background */}
-      <ThreeScene />
+      {/* 3D Background with service models */}
+      <ThreeScene activeService={serviceCardsRef.current?.querySelector(':hover')?.dataset?.service} />
       
-      {/* Particle System */}
-      <ParticleSystem count={50} />
+      {/* Particle System with service-specific colors */}
+      <ParticleSystem count={100} activeService={serviceCardsRef.current?.querySelector(':hover')?.dataset?.service} />
       {/* Hero Section */}
       <div className="relative bg-gradient-to-b from-[#1a2b21]/90 to-[#2a3b31]/90 text-white py-20">
         <div className="container mx-auto px-4">
