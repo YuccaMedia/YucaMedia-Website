@@ -74,7 +74,7 @@ This repository contains the frontend application for Yuca Media's web platform,
 
 ## Accessibility Features
 
-This project is committed to Web Content Accessibility Guidelines (WCAG) 2.1 Level AA compliance. Our accessibility features include:
+This project is committed to Web Content Accessibility Guidelines (WCAG 2.1) Level AA compliance. Our accessibility features include:
 
 ### Semantic HTML
 Proper HTML5 elements are used throughout to ensure screen readers understand the content structure. This includes using `<header>`, `<main>`, `<section>`, `<nav>`, and other semantic elements.

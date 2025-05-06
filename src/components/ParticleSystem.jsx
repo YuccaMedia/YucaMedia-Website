@@ -1,194 +1,154 @@
 import React, { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
-import { createParticleSystem } from '../services/three';
-import { debugLog } from '../services/debugging';
+import ErrorBoundary from './ErrorBoundary';
+import AnimationManager from '../services/AnimationManager';
 
-const ParticleSystem = ({ count = 100, activeService = null }) => {
+/**
+ * ParticleSystem Component
+ * 
+ * Creates a visual particle effect background that can change colors
+ * based on the active service. Uses AnimationManager for state management.
+ */
+const ParticleSystem = ({ count = 50, activeService = null }) => {
   const containerRef = useRef(null);
-  const particleSystemRef = useRef(null);
-  const [particles, setParticles] = useState([]);
-  const isInitializedRef = useRef(false);
-  
-  // Create particles initially with more variation
+  const [currentService, setCurrentService] = useState(null);
+  const particlesRef = useRef([]);
+  const styleTagRef = useRef(null);
+
+  // Set up particles
+  // Initialize animation styles
   useEffect(() => {
-    if (!containerRef.current || isInitializedRef.current) return;
+    console.log('🔄 ParticleSystem: Initializing styles');
     
-    // Initialize particle system with enhanced configuration
-    const particleSystem = createParticleSystem();
-    particleSystemRef.current = particleSystem;
+    // Ensure AnimationManager is initialized
+    AnimationManager.init();
     
-    // Create multiple types of particles
-    const createdParticles = [];
+    if (!containerRef.current) return;
     
-    // Standard round particles
-    const standardParticles = particleSystem.createParticles(containerRef.current, Math.floor(count * 0.7));
-    if (standardParticles && standardParticles.length) {
-      createdParticles.push(...standardParticles);
+    // Create particle styles if not already defined
+    if (!styleTagRef.current) {
+      const style = document.createElement('style');
+      style.id = 'particle-keyframes';
+      style.innerHTML = `
+        @keyframes float {
+          0% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+            opacity: 0;
+          }
+          20% {
+            opacity: 0.8;
+          }
+          80% {
+            opacity: 0.8;
+          }
+          100% {
+            transform: translateY(-100vh) translateX(calc(var(--x-offset) * 1px)) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        .particle {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+        }
+        
+        .particle.blockchain {
+          background-color: rgba(42, 157, 143, 0.3) !important;
+          box-shadow: 0 0 10px rgba(42, 157, 143, 0.5);
+        }
+        
+        .particle.webdev {
+          background-color: rgba(67, 97, 238, 0.3) !important;
+          box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
+        }
+        
+        .particle.creative {
+          background-color: rgba(114, 9, 183, 0.3) !important;
+          box-shadow: 0 0 10px rgba(114, 9, 183, 0.5);
+        }
+        
+        .particle.consulting {
+          background-color: rgba(231, 111, 81, 0.3) !important;
+          box-shadow: 0 0 10px rgba(231, 111, 81, 0.5);
+        }
+      `;
+      document.head.appendChild(style);
+      styleTagRef.current = style;
     }
     
-    // Hexagon shaped particles (for blockchain theme)
-    const hexParticles = particleSystem.createParticles(containerRef.current, Math.floor(count * 0.3), {
-      className: 'particle hexagon',
-      sizeRange: [3, 7], // Slightly larger
-      opacityRange: [0.05, 0.2]
-    });
-    
-    if (hexParticles && hexParticles.length) {
-      createdParticles.push(...hexParticles);
+    // Clear existing particles
+    while (containerRef.current.firstChild) {
+      containerRef.current.removeChild(containerRef.current.firstChild);
     }
+    particlesRef.current = [];
     
-    setParticles(createdParticles);
-    isInitializedRef.current = true;
-    
-    // Add ambient glow to container
-    addAmbientGlow(containerRef.current);
-    
-    // Setup service card hover interaction with improved behavior
-    const handleServiceCardHover = (e) => {
-      const serviceCard = e.target.closest('.service-card-container');
-      if (serviceCard) {
-        const serviceType = serviceCard.dataset.service;
-        updateParticleColors(serviceType, true); // true = with animation
-      }
-    };
-    
-    const handleServiceCardLeave = () => {
-      updateParticleColors(null); // Reset to default
-    };
-    
-    // Add event listeners to service cards with a delay to ensure DOM is ready
-    setTimeout(() => {
-      const serviceCards = document.querySelectorAll('.service-card-container');
-      serviceCards.forEach(card => {
-        card.addEventListener('mouseenter', handleServiceCardHover);
-        card.addEventListener('mouseleave', handleServiceCardLeave);
-      });
-    }, 500);
-    
-    // Add parallax effect to particles
-    window.addEventListener('mousemove', handleMouseMove);
+    // Create new particles
+    for (let i = 0; i < count; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      
+      // Random styles
+      const size = Math.random() * 5 + 1;
+      const xOffset = Math.random() * 100 - 50;
+      const duration = Math.random() * 10 + 5;
+      const delay = Math.random() * 5;
+      
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.background = `rgba(194, 200, 196, ${Math.random() * 0.3 + 0.1})`;
+      particle.style.top = `${Math.random() * 100}%`;
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.setProperty('--x-offset', xOffset);
+      particle.style.animation = `float ${duration}s linear infinite`;
+      particle.style.animationDelay = `${delay}s`;
+      
+      containerRef.current.appendChild(particle);
+      particlesRef.current.push(particle);
+    }
     
     // Clean up
     return () => {
-      if (particleSystemRef.current) {
-        particleSystemRef.current.cleanup();
-        particleSystemRef.current = null;
-      }
-      
-      // Remove ambient glow
-      const glowElement = document.getElementById('ambient-glow');
-      if (glowElement) {
-        glowElement.remove();
-      }
-      
-      // Remove event listeners
-      const serviceCards = document.querySelectorAll('.service-card-container');
-      serviceCards.forEach(card => {
-        card.removeEventListener('mouseenter', handleServiceCardHover);
-        card.removeEventListener('mouseleave', handleServiceCardLeave);
+      // Remove particles
+      particlesRef.current.forEach(particle => {
+        if (particle.parentNode) {
+          particle.parentNode.removeChild(particle);
+        }
       });
+      particlesRef.current = [];
       
-      window.removeEventListener('mousemove', handleMouseMove);
-      isInitializedRef.current = false;
+      // Remove style
+      if (styleTagRef.current && styleTagRef.current.parentNode) {
+        styleTagRef.current.parentNode.removeChild(styleTagRef.current);
+        styleTagRef.current = null;
+      }
     };
   }, [count]);
-  
-  // Add ambient glow to container
-  const addAmbientGlow = (container) => {
-    const glowElement = document.createElement('div');
-    glowElement.id = 'ambient-glow';
-    glowElement.style.position = 'absolute';
-    glowElement.style.inset = '0';
-    glowElement.style.background = 'radial-gradient(circle at 50% 50%, rgba(42, 157, 143, 0.05) 0%, transparent 70%)';
-    glowElement.style.pointerEvents = 'none';
-    glowElement.style.zIndex = '-2';
-    
-    container.appendChild(glowElement);
-  };
-  
-  // Handle mouse parallax effect
-  const handleMouseMove = (e) => {
-    if (!particles.length) return;
-    
-    const moveX = (e.clientX / window.innerWidth - 0.5) * 10;
-    const moveY = (e.clientY / window.innerHeight - 0.5) * 10;
-    
-    // Apply different parallax amounts to create depth
-    particles.forEach((particle, index) => {
-      const depth = parseFloat(particle.style.width) / 10; // Use size as depth indicator
-      const parallaxAmount = 0.2 + (depth * 0.3); // Larger particles move more
-      
-      // Every 3rd particle moves in opposite direction for more natural feel
-      const direction = index % 3 === 0 ? -1 : 1;
-      
-      particle.style.transform = `translate(${moveX * parallaxAmount * direction}px, ${moveY * parallaxAmount * direction}px)`;
-    });
-  };
-  
-  // Handle active service changes
+
+  // Update particles when active service changes
   useEffect(() => {
-    updateParticleColors(activeService);
-  }, [activeService]);
-  
-  // Update particle colors based on service type with enhanced effects
-  const updateParticleColors = (serviceType, withAnimation = false) => {
-    if (!particles.length) return;
+    // Use prop value if provided, otherwise use internal state
+    const serviceToHighlight = activeService || currentService;
     
-    // Update ambient glow color based on service
-    const glowElement = document.getElementById('ambient-glow');
-    if (glowElement) {
-      let glowColor = 'rgba(42, 157, 143, 0.05)'; // Default/blockchain
-      
-      if (serviceType === 'webdev') {
-        glowColor = 'rgba(67, 97, 238, 0.05)';
-      } else if (serviceType === 'creative') {
-        glowColor = 'rgba(114, 9, 183, 0.05)';
-      } else if (serviceType === 'consulting') {
-        glowColor = 'rgba(231, 111, 81, 0.05)';
-      }
-      
-      glowElement.style.background = `radial-gradient(circle at 50% 50%, ${glowColor} 0%, transparent 70%)`;
-    }
-    
-    // Process each particle with staggered animation
-    particles.forEach((particle, index) => {
+    // Update particle classes
+    particlesRef.current.forEach(particle => {
       // Remove all service type classes
       particle.classList.remove('blockchain', 'webdev', 'creative', 'consulting');
       
       // Add the new service type class if specified
-      if (serviceType) {
-        particle.classList.add(serviceType);
-        
-        // Add enhanced animation with staggering for smoother visual effect
-        if (withAnimation) {
-          const delay = index % 10 * 50; // Stagger by groups of 10 particles
-          
-          // Initial state
-          particle.style.transition = 'none';
-          particle.style.opacity = '0';
-          
-          // Animate in with delay
-          setTimeout(() => {
-            particle.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
-            particle.style.opacity = '1';
-            particle.style.transform = 'scale(1.2)';
-            
-            // Return to normal scale
-            setTimeout(() => {
-              particle.style.transform = 'scale(1)';
-            }, 300);
-          }, delay);
-        }
+      if (serviceToHighlight) {
+        particle.classList.add(serviceToHighlight);
       }
     });
-  };
-  
+  }, [activeService, currentService]);
+
   return (
-    <div 
-      ref={containerRef} 
-      className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]"
-      data-testid="particle-system-container"
-    />
+    <ErrorBoundary fallback={<div className="hidden">Particle system error</div>}>
+      <div 
+        ref={containerRef} 
+        className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]"
+        aria-hidden="true"
+      />
+    </ErrorBoundary>
   );
 };
 
