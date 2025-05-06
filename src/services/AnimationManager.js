@@ -9,6 +9,14 @@
 import * as THREE from 'three';
 import { gsap, ScrollTrigger, forceScrollTriggerRegistration } from '../lib/gsap';
 
+// Particle colors for each service type
+const PARTICLE_COLORS = {
+  blockchain: 0x2a9d8f,
+  webdev: 0x4361ee,
+  creative: 0x7209b7,
+  consulting: 0xe76f51
+};
+
 // Animation Manager State
 const state = {
   // Resource loading states
@@ -28,6 +36,9 @@ const state = {
   
   // Service-specific state
   activeService: null,
+  
+  // Particle systems
+  particles: [],
   
   // Debug mode
   debug: true
@@ -138,10 +149,10 @@ export function initThreeJs(container, options = {}) {
     container.appendChild(renderer.domElement);
     
     // Add lights
-    const ambientLight = new THREE.AmbientLight(0xc2c8c4, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xc2c8c4, 0.7); // Increased ambient light
     scene.add(ambientLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0); // Increased directional light
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
     
@@ -298,9 +309,10 @@ function createBlockchainModel(scene) {
   const cubeMaterial = new THREE.MeshPhongMaterial({ 
     color: 0x2a9d8f,
     transparent: true,
-    opacity: 0.7,
+    opacity: 1.0,
     emissive: 0x2a9d8f,
-    emissiveIntensity: 0.2
+    emissiveIntensity: 2.0, // Increased glow
+    shininess: 80
   });
   
   // Create a chain of cubes
@@ -323,9 +335,9 @@ function createBlockchainModel(scene) {
     }
   }
   
-  // Position the group
-  group.position.set(-15, 5, -10);
-  group.scale.set(2, 2, 2);
+  // Position the group - moved closer to camera
+  group.position.set(-4, 4, -3);
+  group.scale.set(1.5, 1.5, 1.5);
   
   scene.add(group);
 }
@@ -342,9 +354,10 @@ function createWebDevModel(scene) {
   const bracketMaterial = new THREE.MeshPhongMaterial({ 
     color: 0x4361ee,
     transparent: true,
-    opacity: 0.7,
+    opacity: 1.0,
     emissive: 0x4361ee,
-    emissiveIntensity: 0.2
+    emissiveIntensity: 2.0, // Increased glow
+    shininess: 80
   });
   
   // Left bracket
@@ -374,9 +387,9 @@ function createWebDevModel(scene) {
     group.add(line);
   }
   
-  // Position the group
-  group.position.set(15, 2, -10);
-  group.scale.set(2, 2, 2);
+  // Position the group - moved closer to camera
+  group.position.set(4, 2, -3);
+  group.scale.set(1.5, 1.5, 1.5);
   
   scene.add(group);
 }
@@ -393,9 +406,10 @@ function createCreativeModel(scene) {
   const baseMaterial = new THREE.MeshPhongMaterial({ 
     color: 0x7209b7,
     transparent: true,
-    opacity: 0.7,
+    opacity: 1.0,
     emissive: 0x7209b7,
-    emissiveIntensity: 0.2
+    emissiveIntensity: 2.0, // Increased glow
+    shininess: 80
   });
   
   // Camera body
@@ -410,9 +424,9 @@ function createCreativeModel(scene) {
   lens.position.z = 0.35;
   group.add(lens);
   
-  // Position the group
-  group.position.set(-12, -5, -10);
-  group.scale.set(2, 2, 2);
+  // Position the group - moved closer to camera
+  group.position.set(-4, -3, -3);
+  group.scale.set(1.5, 1.5, 1.5);
   
   scene.add(group);
 }
@@ -429,9 +443,10 @@ function createConsultingModel(scene) {
   const chartMaterial = new THREE.MeshPhongMaterial({ 
     color: 0xe76f51,
     transparent: true,
-    opacity: 0.7,
+    opacity: 1.0,
     emissive: 0xe76f51,
-    emissiveIntensity: 0.2
+    emissiveIntensity: 2.0, // Increased glow
+    shininess: 80
   });
   
   // Base
@@ -450,9 +465,9 @@ function createConsultingModel(scene) {
     group.add(bar);
   }
   
-  // Position the group
-  group.position.set(12, -5, -10);
-  group.scale.set(2, 2, 2);
+  // Position the group - moved closer to camera
+  group.position.set(4, -3, -3);
+  group.scale.set(1.5, 1.5, 1.5);
   
   scene.add(group);
 }
@@ -463,18 +478,18 @@ function createConsultingModel(scene) {
 function highlightServiceModel(scene, serviceType) {
   if (!scene) return;
   
-  // Default material properties
+    // Default material properties
   const defaultProps = {
-    opacity: 0.7,
-    emissiveIntensity: 0.2,
-    scale: 2
+    opacity: 0.8,
+    emissiveIntensity: 1.0, // Higher base emissive intensity
+    scale: 1.5
   };
   
   // Highlighted material properties
   const highlightProps = {
-    opacity: 0.9,
-    emissiveIntensity: 0.5,
-    scale: 2.5
+    opacity: 1.0,
+    emissiveIntensity: 2.5, // Increased glow for highlighted objects
+    scale: 2.0
   };
   
   // Go through all models and reset or highlight as appropriate
@@ -489,15 +504,13 @@ function highlightServiceModel(scene, serviceType) {
           const materials = Array.isArray(object.material) ? object.material : [object.material];
           
           materials.forEach(material => {
-            if (material.transparent) {
-              // Apply appropriate properties based on whether this is the highlighted model
-              if (isTargetModel) {
-                material.opacity = highlightProps.opacity;
-                material.emissiveIntensity = highlightProps.emissiveIntensity;
-              } else {
-                material.opacity = defaultProps.opacity;
-                material.emissiveIntensity = defaultProps.emissiveIntensity;
-              }
+            // Apply appropriate properties based on whether this is the highlighted model
+            if (isTargetModel) {
+              material.opacity = highlightProps.opacity;
+              material.emissiveIntensity = highlightProps.emissiveIntensity;
+            } else {
+              material.opacity = defaultProps.opacity;
+              material.emissiveIntensity = defaultProps.emissiveIntensity;
             }
           });
         }

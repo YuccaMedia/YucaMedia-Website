@@ -2,10 +2,13 @@
 
 /* Service Card Container */
 .services-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
   position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Service Card 3D Effects */
