@@ -431,7 +431,7 @@ const Contact = () => {
             </h1>
             <p 
               ref={heroSubtitleRef} 
-              className="text-xl mb-8 text-white"
+              className="text-xl mb-8 text-white whitespace-normal max-w-2xl"
               style={{ textShadow: '0 0 20px rgba(42, 157, 143, 0.7)' }}
             >
               Get in touch with our team to explore how blockchain technology can empower your creative projects.
