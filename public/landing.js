@@ -9,12 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const enthusiasmOptions = document.querySelectorAll('.enthusiasm-option');
     const investorContact = document.getElementById('investor-contact');
     const enterSite = document.getElementById('enter-site');
+    const logoTitle = document.getElementById('logo-title');
+    const logoTagline = document.getElementById('logo-tagline');
     
-    // Show enter button after loading animation (3 seconds)
+    // Apply letter-by-letter animation to logo text
+    animateLogoText();
+    
+    // Show enter button after loading animation (1.5 seconds)
     setTimeout(() => {
         enterButton.classList.remove('hidden');
         enterButton.classList.add('visible');
-    }, 3000);
+    }, 1500);
     
     // Enter button click - transition to main content with 3D effect
     enterButton.addEventListener('click', () => {
@@ -210,12 +215,151 @@ function implementScrollEffects() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('active');
+                
+                // Get the section ID and animate all text elements in that section
+                const sectionId = entry.target.id;
+                animateSectionText(sectionId);
+                
+                // Add glow effect to the section title
+                const sectionTitle = entry.target.querySelector('h2');
+                if (sectionTitle) {
+                    animateHeading(sectionTitle);
+                }
             }
         });
     }, { threshold: 0.3 });
     
     sections.forEach(section => {
         observer.observe(section);
+    });
+}
+
+// Main function to animate all text in a section
+function animateSectionText(sectionId) {
+    // Map of section IDs to their text element IDs
+    const sectionTextMap = {
+        'who-we-are': ['whoWeAreText1', 'whoWeAreText2', 'whoWeAreText3', 'whoWeAreText4'],
+        'why-we-exist': ['whyWeExistText1', 'whyWeExistText2', 'whyWeExistText3', 'whyWeExistText4', 'whyWeExistText5'],
+        'crypto-lottery': ['cryptoLotteryText1', 'cryptoLotteryText2', 'cryptoLotteryText3'],
+        'better-odds': ['betterOddsText1', 'betterOddsText2', 'betterOddsText3', 'betterOddsText4'],
+        'yuca-studios': ['yucaStudiosText1', 'yucaStudiosText2', 'yucaStudiosText3', 'yucaStudiosText4', 'yucaStudiosText5'],
+        'what-we-stand-for': ['standForText1', 'standForText2', 'standForText3'],
+        'vision': ['visionText1', 'visionText2', 'visionText3'],
+        'build-future': ['buildFutureText1', 'buildFutureText2', 'buildFutureText3', 'buildFutureText4']
+    };
+    
+    // Get the list of text element IDs for this section
+    const textElementIds = sectionTextMap[sectionId];
+    
+    // If we have text elements for this section, animate them
+    if (textElementIds && textElementIds.length > 0) {
+        textElementIds.forEach((id, index) => {
+            const element = document.getElementById(id);
+            if (element) {
+                animateLetterByLetter(element, index);
+            }
+        });
+    }
+}
+
+// Function to animate a heading with glow effect
+function animateHeading(headingElement) {
+    if (!headingElement) return;
+    
+    // Initially hide the heading
+    gsap.set(headingElement, { opacity: 0, y: 30 });
+    
+    // Animate the heading with fade-in and enhanced glow
+    gsap.to(headingElement, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: "power2.out",
+        onComplete: () => {
+            // Add pulsing glow animation
+            gsap.to(headingElement, {
+                textShadow: "0 0 30px rgba(42, 157, 143, 0.9)",
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
+    });
+}
+
+// Letter-by-letter animation for any text element
+function animateLetterByLetter(element, index = 0) {
+    if (!element) return;
+    
+    const text = element.textContent;
+    element.textContent = '';
+    
+    // Create spans for each letter
+    text.split('').forEach((letter, i) => {
+        const span = document.createElement('span');
+        span.textContent = letter === ' ' ? '\u00A0' : letter;
+        span.classList.add('animated-letter');
+        element.appendChild(span);
+    });
+    
+    // Animate each letter with staggered delay
+    const letters = element.querySelectorAll('.animated-letter');
+    gsap.to(letters, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.02,
+        delay: 0.3 + (index * 0.2), // slightly reduced delay between elements
+        ease: "power2.out"
+    });
+}
+
+// Animate logo text with a simpler fade-in and glow animation
+function animateLogoText() {
+    // Get the logo title and tagline elements
+    const logoTitle = document.getElementById('logo-title');
+    const logoTagline = document.getElementById('logo-tagline');
+    
+    if (!logoTitle || !logoTagline) return;
+    
+    // Initially set them to be invisible
+    gsap.set([logoTitle, logoTagline], { opacity: 0 });
+    
+    // Animate the title with a fade-in and slight pulsing glow
+    gsap.to(logoTitle, {
+        opacity: 1,
+        duration: 1,
+        delay: 0.5,
+        ease: "power1.inOut",
+        onComplete: () => {
+            // Add pulsing glow animation
+            gsap.to(logoTitle, {
+                filter: "drop-shadow(0 0 12px rgba(42, 157, 143, 1))",
+                duration: 1.5,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
+    });
+    
+    // Animate the tagline with a fade-in
+    gsap.to(logoTagline, {
+        opacity: 1,
+        duration: 1,
+        delay: 1.5,
+        ease: "power1.inOut",
+        onComplete: () => {
+            // Add subtle glow animation
+            gsap.to(logoTagline, {
+                filter: "drop-shadow(0 0 8px rgba(42, 157, 143, 0.8))",
+                duration: 2,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
     });
 }
 

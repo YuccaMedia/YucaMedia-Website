@@ -72,8 +72,8 @@
         }
         
         .logo-container {
-            width: 400px;
-            height: 500px;
+            width: 600px;
+            height: 750px;
         }
         
         /* Main content container */
@@ -158,6 +158,7 @@
             margin-bottom: 30px;
             font-weight: 700;
             color: var(--primary-light);
+            text-shadow: 0 0 20px rgba(42, 157, 143, 0.7);
         }
         
         p {
@@ -165,6 +166,18 @@
             margin-bottom: 20px;
             max-width: 800px;
             line-height: 1.8;
+        }
+        
+        /* Animated text with glow effect */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(42, 157, 143, 0.7);
+        }
+        
+        /* For letter animation */
+        .animated-letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         /* Background particles */
@@ -438,11 +451,11 @@
                 <path d="M250 315 L245 335" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
                 <path d="M250 315 L260 330" fill="none" stroke="#c2c8c4" stroke-width="2" stroke-linecap="round" />
                 
-                <!-- Text - YUCA MEDIA (positioned below the circle) -->
-                <text x="200" y="430" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#c2c8c4" text-anchor="middle">YUCA MEDIA</text>
+                <!-- Text - YUCA MEDIA (positioned below the circle) with glow effect -->
+                <text x="200" y="430" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#c2c8c4" text-anchor="middle" id="logo-title" style="filter: drop-shadow(0 0 8px rgba(42, 157, 143, 0.8));">YUCA MEDIA</text>
                 
-                <!-- Tagline (positioned below the name) -->
-                <text x="200" y="460" font-family="Arial, sans-serif" font-size="14" fill="#c2c8c4" text-anchor="middle">Rooted in Innovation. Built for the Future.</text>
+                <!-- Tagline (positioned below the name) with glow effect -->
+                <text x="200" y="460" font-family="Arial, sans-serif" font-size="14" fill="#c2c8c4" text-anchor="middle" id="logo-tagline" style="filter: drop-shadow(0 0 5px rgba(42, 157, 143, 0.8));">Rooted in Innovation. Built for the Future.</text>
             </svg>
         </div>
         <div class="enter-button hidden" id="enter-loading-button">
@@ -458,11 +471,11 @@
         <section id="who-we-are" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>Who We Are</h2>
-                <p>Yuca Media is a creative tech company reinventing how people and businesses appear in the digital world.</p>
-                <p>We design bold, engaging websites and build future-ready platforms that don't just look good — they inspire action.</p>
-                <p>But we're not just another web development agency.</p>
-                <p>We're a movement.</p>
+                <h2 id="whoWeAreTitle">Who We Are</h2>
+                <p class="glow-text" id="whoWeAreText1">Yuca Media is a creative tech company reinventing how people and businesses appear in the digital world.</p>
+                <p class="glow-text" id="whoWeAreText2">We design bold, engaging websites and build future-ready platforms that don't just look good — they inspire action.</p>
+                <p class="glow-text" id="whoWeAreText3">We are not just another web development agency.</p>
+                <p class="glow-text" id="whoWeAreText4">We are a movement.</p>
                 
                 <div class="button-3d next-section-button" data-section="why-we-exist">Read Next: Why We Exist</div>
             </div>
@@ -472,12 +485,12 @@
         <section id="why-we-exist" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>Why We Exist</h2>
-                <p>In 2023, our founder, Tatiane Amnuar, found herself navigating major economic shifts that disrupted her businesses and her life. Faced with uncertainty, she chose reinvention — not just for herself, but for anyone who's ever had to start over.</p>
-                <p>That choice became Yuca Media:</p>
-                <p>A company rooted in resilience, powered by innovation, and built for the future.</p>
-                <p>We believe in second chances. In people. In purpose.</p>
-                <p>And we believe in using technology to create real opportunities for others.</p>
+                <h2 id="whyWeExistTitle">Why We Exist</h2>
+                <p id="whyWeExistText1" class="glow-text">In 2023, our founder, Tatiane Amnuar, found herself navigating major economic shifts that disrupted her businesses and her life. Faced with uncertainty, she chose reinvention — not just for herself, but for anyone who's ever had to start over.</p>
+                <p id="whyWeExistText2" class="glow-text">That choice became Yuca Media:</p>
+                <p id="whyWeExistText3" class="glow-text">A company rooted in resilience, powered by innovation, and built for the future.</p>
+                <p id="whyWeExistText4" class="glow-text">We believe in second chances. In people. In purpose.</p>
+                <p id="whyWeExistText5" class="glow-text">We believe in using technology to create real opportunities for others.</p>
                 
                 <div class="button-3d next-section-button" data-section="crypto-lottery">Read Next: Reimagining the Odds</div>
             </div>
@@ -487,10 +500,10 @@
         <section id="crypto-lottery" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>Reimagining the Odds: The Crypto Lottery DApp</h2>
-                <p>Inspired by a personal connection with her late father — who always encouraged her to "try her luck" — Tatiane started thinking about how we define chance and opportunity in today's world.</p>
-                <p>She discovered the odds of winning a traditional lottery are about 1 in 14 million. Even blockchain-based versions like PancakeSwap Lottery improve that only to 1 in 1 million.</p>
-                <p>So she asked:</p>
+                <h2 id="cryptoLotteryTitle">Reimagining the Odds: The Crypto Lottery DApp</h2>
+                <p id="cryptoLotteryText1" class="glow-text">Inspired by a personal connection with her late father — who always encouraged her to "try her luck" — Tatiane started thinking about how we define chance and opportunity in today's world.</p>
+                <p id="cryptoLotteryText2" class="glow-text">She discovered the odds of winning a traditional lottery are about 1 in 14 million. Even blockchain-based versions like PancakeSwap Lottery improve that only to 1 in 1 million.</p>
+                <p id="cryptoLotteryText3" class="glow-text">So she asked:</p>
                 
                 <div class="button-3d next-section-button" data-section="better-odds">What if we could do better?</div>
             </div>
@@ -500,11 +513,11 @@
         <section id="better-odds" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>Enter the Crypto Lottery DApp</h2>
-                <p>Built by Yuca Media with 1 in 1 million odds of winning. But wait, that's the same as PancakeSwap Lottery. How is our CryptoLottery_Dapp different and better? That's easy: Lower fees.</p>
-                <p>PancakeSwap Lottery is built on the Binance Smart Chain (BSC), and the CryptoLottery_Dapp is built on the Solana Blockchain. While both offer relatively low transaction costs compared to Ethereum, Solana's fees are typically even lower, ranging from a few thousandths of a cent to a few cents per transaction.</p>
-                <p>Players can pick 5 numbers from 1-30: C(30,5) = that's 142,506 combinations. And 1 bonus number from 1-7: 7 combinations. The Total: 142,506 × 7 = 997,542 (odds of ~1 in 997,542), bringing the odds to approximately 1 in 1 million.</p>
-                <p>With jackpots powered by blockchain and transparent smart contracts, we are creating a lottery where people stand a chance.</p>
+                <h2 id="betterOddsTitle">Enter the Crypto Lottery DApp</h2>
+                <p id="betterOddsText1" class="glow-text">Built by Yuca Media with 1 in 1 million odds of winning. But wait, that's the same as PancakeSwap Lottery. How is our CryptoLottery_Dapp different and better? That's easy: Lower fees.</p>
+                <p id="betterOddsText2" class="glow-text">PancakeSwap Lottery is built on the Binance Smart Chain (BSC), and the CryptoLottery_Dapp is built on the Solana Blockchain. While both offer relatively low transaction costs compared to Ethereum, Solana's fees are typically even lower, ranging from a few thousandths of a cent to a few cents per transaction.</p>
+                <p id="betterOddsText3" class="glow-text">Players can pick 5 numbers from 1-30: C(30,5) = that's 142,506 combinations. And 1 bonus number from 1-7: 7 combinations. The Total: 142,506 × 7 = 997,542 (odds of ~1 in 997,542), bringing the odds to approximately 1 in 1 million.</p>
+                <p id="betterOddsText4" class="glow-text">With jackpots powered by blockchain and transparent smart contracts, we are creating a lottery where people stand a chance.</p>
                 
                 <div class="button-3d explore-dapp-button">Click here to explore the DApp</div>
                 
@@ -522,12 +535,12 @@
         <section id="yuca-studios" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>Yuca Studios: Giving Creators Their Power Back</h2>
-                <p>As a filmmaker and actress herself, Tatiane saw another problem:</p>
-                <p>Production is drying up. Artists are being priced out. And many creative professionals — including herself — are facing eviction or financial collapse.</p>
-                <p>Yuca Studios is our solution.</p>
-                <p>A blockchain-powered production studio focused on keeping films and jobs in California, while creating new pathways for independent artists and vulnerable creatives to thrive.</p>
-                <p>This isn't just about film. It's about rebuilding an industry with community ownership, financial transparency, and tech-driven opportunity.</p>
+                <h2 id="yucaStudiosTitle">Yuca Studios: Giving Creators Their Power Back</h2>
+                <p id="yucaStudiosText1" class="glow-text">As a filmmaker and actress herself, Tatiane saw another problem:</p>
+                <p id="yucaStudiosText2" class="glow-text">Production is drying up. Artists are being priced out. And many creative professionals — including herself — are facing eviction or financial collapse.</p>
+                <p id="yucaStudiosText3" class="glow-text">Yuca Studios is our solution.</p>
+                <p id="yucaStudiosText4" class="glow-text">A blockchain-powered production studio focused on keeping films and jobs in California, while creating new pathways for independent artists and vulnerable creatives to thrive.</p>
+                <p id="yucaStudiosText5" class="glow-text">This isn't just about film. It's about rebuilding an industry with community ownership, financial transparency, and tech-driven opportunity.</p>
                 
                 <div class="button-3d next-section-button" data-section="what-we-stand-for">Read Next: What We Stand For</div>
             </div>
@@ -537,10 +550,10 @@
         <section id="what-we-stand-for" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>What We Stand For</h2>
-                <p>Yuca Media is more than a tech company.</p>
-                <p>We're a mission-driven platform for reinvention.</p>
-                <p>We develop apps, smart contracts, and web experiences — but anyone can do that today.</p>
+                <h2 id="standForTitle">What We Stand For</h2>
+                <p id="standForText1" class="glow-text">Yuca Media is more than a tech company.</p>
+                <p id="standForText2" class="glow-text">We're a mission-driven platform for reinvention.</p>
+                <p id="standForText3" class="glow-text">We develop apps, smart contracts, and web experiences — but anyone can do that today.</p>
                 
                 <div class="button-3d next-section-button" data-section="vision">What sets us apart is our vision:</div>
             </div>
@@ -550,11 +563,11 @@
         <section id="vision" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>Our Vision</h2>
-                <ul>
-                    <li>To help people believe again.</li>
-                    <li>To give businesses the tools to evolve.</li>
-                    <li>To empower creators, coders, dreamers, and doers to take their next step forward.</li>
+                <h2 id="visionTitle">Our Vision</h2>
+                <ul id="visionList" class="glow-text">
+                    <li id="visionText1" class="glow-text">To help people believe again.</li>
+                    <li id="visionText2" class="glow-text">To give businesses the tools to evolve.</li>
+                    <li id="visionText3" class="glow-text">To empower creators, coders, dreamers, and doers to take their next step forward.</li>
                 </ul>
                 
                 <div class="button-3d next-section-button" data-section="build-future">Read Next: Let's Build a Better Future</div>
@@ -565,11 +578,11 @@
         <section id="build-future" class="section-fade">
             <div class="section-background"></div>
             <div class="section-container">
-                <h2>Let's Build a Better Future — Together</h2>
-                <p>We're still in the early days. We're building, testing, pushing limits — and yes, we need help.</p>
-                <p>Can you contribute to helping Yuca Media grow?</p>
-                <p>Can you help us bring these ideas to life?</p>
-                <p>Can you be a part of this story?</p>
+                <h2 id="buildFutureTitle">Let's Build a Better Future — Together</h2>
+                <p id="buildFutureText1" class="glow-text">We're still in the early days. We're building, testing, pushing limits — and yes, we need help.</p>
+                <p id="buildFutureText2" class="glow-text">Can you contribute to helping Yuca Media grow?</p>
+                <p id="buildFutureText3" class="glow-text">Can you help us bring these ideas to life?</p>
+                <p id="buildFutureText4" class="glow-text">Can you be a part of this story?</p>
                 
                 <div class="button-3d next-section-button" data-section="donate">Donate. Share. Join the movement.</div>
             </div>
