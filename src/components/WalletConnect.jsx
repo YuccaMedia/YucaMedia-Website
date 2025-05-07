@@ -121,7 +121,7 @@ export const WalletProvider = ({ children }) => {
 };
 
 // The actual button component
-const WalletConnect = ({ className = '', variant = 'primary', size = 'md' }) => {
+const WalletConnect = ({ className = '', variant = 'primary', size = 'md', theme = 'yuca-media' }) => {
   const { wallet, connectWallet, disconnectWallet } = useWallet();
   
   // Define button styles based on variant and size
@@ -135,12 +135,21 @@ const WalletConnect = ({ className = '', variant = 'primary', size = 'md' }) => 
       lg: 'px-6 py-3 text-lg'
     };
     
-    // Variant classes
-    const variantClasses = {
-      primary: 'bg-yuca-green text-yuca-cream hover:bg-yuca-green-light focus:ring-2 focus:ring-yuca-green-light focus:ring-opacity-50',
-      secondary: 'bg-yuca-cream text-yuca-green border border-yuca-green hover:bg-yuca-cream-dark focus:ring-2 focus:ring-yuca-cream-dark focus:ring-opacity-50',
-      transparent: 'bg-transparent text-yuca-green hover:text-yuca-green-light focus:ring-2 focus:ring-yuca-green focus:ring-opacity-50'
+    // Theme-based variant classes
+    const themeVariants = {
+      'yuca-media': {
+        primary: 'bg-yuca-media-dark text-white hover:bg-opacity-90 focus:ring-2 focus:ring-yuca-media-light focus:ring-opacity-50',
+        secondary: 'bg-yuca-media-light text-yuca-media-dark border border-yuca-media-dark hover:bg-opacity-90 focus:ring-2 focus:ring-yuca-media-light focus:ring-opacity-50',
+        transparent: 'bg-transparent text-yuca-media-dark hover:text-opacity-80 focus:ring-2 focus:ring-yuca-media-dark focus:ring-opacity-50'
+      },
+      'yuca-studios': {
+        primary: 'bg-yuca-green text-yuca-cream hover:bg-yuca-green-light focus:ring-2 focus:ring-yuca-green-light focus:ring-opacity-50',
+        secondary: 'bg-yuca-cream text-yuca-green border border-yuca-green hover:bg-yuca-cream-dark focus:ring-2 focus:ring-yuca-cream-dark focus:ring-opacity-50',
+        transparent: 'bg-transparent text-yuca-green hover:text-yuca-green-light focus:ring-2 focus:ring-yuca-green focus:ring-opacity-50'
+      }
     };
+    
+    const variantClasses = themeVariants[theme] || themeVariants['yuca-media'];
     
     return `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
   };

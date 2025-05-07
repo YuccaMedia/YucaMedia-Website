@@ -5,12 +5,12 @@
 @tailwind utilities;
 
 :root {
-  /* Legacy color variables - kept for backward compatibility */
+  /* Yuca Media color palette */
   --primary-dark: #1a2b21;
   --primary-light: #c2c8c4;
   --bg-light: #f5f8f6;
   
-  /* New Yuca color palette */
+  /* Yuca Studios color palette (for studio components only) */
   --yuca-green: #1A4D2E;
   --yuca-cream: #F5F0E1;
   --yuca-green-light: #2A6D3E;
@@ -84,10 +84,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--yuca-green);
+  background: var(--primary-dark);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--yuca-green-light);
+  background: #253c2e;
 }

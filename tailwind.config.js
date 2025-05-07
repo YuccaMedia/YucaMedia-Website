@@ -7,6 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Yuca Media original palette
+        'yuca-media': {
+          'dark': '#1a2b21',
+          'light': '#c2c8c4',
+          'bg-light': '#f5f8f6'
+        },
+        // Yuca Studios palette (for studio components only)
         'yuca': {
           'green': '#1A4D2E',
           'cream': '#F5F0E1',
