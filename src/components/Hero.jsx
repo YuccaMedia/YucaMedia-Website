@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/globals.css';
 import WalletConnect from './WalletConnect';
 
 const Hero = () => {
   const [animationLoaded, setAnimationLoaded] = useState(false);
+  const animationContainerRef = useRef(null);
 
   useEffect(() => {
     // Use dynamic import instead of require for better error handling
@@ -22,35 +23,65 @@ const Hero = () => {
       });
   }, []);
 
+  // Handle animation responsive sizing on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const container = animationContainerRef.current;
+      if (container) {
+        // Adjust animation size based on screen width
+        if (window.innerWidth < 640) {
+          container.style.width = '300px';
+          container.style.height = '375px';
+        } else {
+          container.style.width = '400px';
+          container.style.height = '500px';
+        }
+      }
+    };
+
+    // Set initial size
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <section id="main-content" className="bg-gradient-to-b from-yuca-media-dark to-[#2a3b31] text-white py-20">
-      <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center">
+    <section id="main-content" className="bg-gradient-to-b from-yuca-media-dark to-[#2a3b31] text-white py-12 sm:py-16 md:py-20">
+      <div className="container mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center">
         <div className="w-full md:w-1/2 mb-10 md:mb-0">
-          <h1 className="hero-title text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
             Empowering Creators Through Blockchain
           </h1>
-          <p className="hero-subtitle text-xl md:text-2xl mb-8 text-yuca-media-light">
+          <p className="hero-subtitle text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 text-yuca-media-light">
             Yuca Media bridges the gap between traditional entertainment and Web3 technology, creating new opportunities for independent artists and filmmakers.
           </p>
-          <div className="hero-buttons flex flex-col sm:flex-row gap-4">
+          <div className="hero-buttons flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button 
-              className="bg-yuca-media-light text-yuca-media-dark px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all text-lg"
+              className="touch-target bg-yuca-media-light text-yuca-media-dark px-4 sm:px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all text-base sm:text-lg"
               aria-label="Explore CryptoLottery"
             >
               Explore CryptoLottery
             </button>
             <Link 
               to="/studios-landing" 
-              className="border-2 border-yuca-media-light text-yuca-media-light px-6 py-3 rounded-lg font-medium hover:bg-yuca-media-light hover:bg-opacity-10 transition-all text-lg inline-flex items-center justify-center"
+              className="touch-target border-2 border-yuca-media-light text-yuca-media-light px-4 sm:px-6 py-[10px] sm:py-3 rounded-lg font-medium hover:bg-yuca-media-light hover:bg-opacity-10 transition-all text-base sm:text-lg inline-flex items-center justify-center"
               aria-label="Learn About Yuca Studios"
             >
               Discover Yuca Studios
             </Link>
           </div>
         </div>
-        <div className="w-full md:w-1/2 flex justify-center" aria-hidden="true">
+        <div className="w-full md:w-1/2 flex justify-center mt-6 md:mt-0" aria-hidden="true">
           {/* SVG Animation Container */}
-          <div id="logo-animation-container" className="w-[400px] h-[500px]">
+          <div 
+            id="logo-animation-container" 
+            ref={animationContainerRef}
+            className="w-[300px] h-[375px] sm:w-[400px] sm:h-[500px]"
+          >
             {/* Fallback SVG for when JavaScript is disabled */}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" className="w-full h-full">
               {/* Dark green background circle */}

@@ -10,6 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { WalletProvider } from './components/WalletConnect';
 import './styles/globals.css';
 import './styles/services.css';
+import './styles/responsive-utilities.css';
 
 // Initialize the Animation Manager as early as possible
 AnimationManager.init();
