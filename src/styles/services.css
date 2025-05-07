@@ -53,18 +53,14 @@
 
 /* Add subtle texture */
 .service-card::after {
-  /* cSpell:disable */
+  /* cSpell:disable-next-line */
   content: '';
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23ffffff' fill-opacity='0.05' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
   opacity: 0.3;
   z-index: 0;
-  /* cSpell:enable */
 }
-/* cSpell:disable */
-/* The above SVG data URL is correctly formatted - disabling spell check for this section */
-/* cSpell:enable */
 
 /* Service Icon Animations - Enhanced with more dynamic effects */
 .service-icon {
