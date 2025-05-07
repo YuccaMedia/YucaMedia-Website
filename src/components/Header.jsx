@@ -54,11 +54,9 @@ const Header = () => {
               )}
             </li>
             <li>
-              {isHomePage ? (
-                <a href="#studios" className="hover:text-yuca-media-light transition-colors">Yuca Studios</a>
-              ) : (
-                <Link to="/home#studios" className="hover:text-yuca-media-light transition-colors">Yuca Studios</Link>
-              )}
+              <Link to="/yuca-studios" className="hover:text-yuca-media-light transition-colors">
+                Yuca Studios
+              </Link>
             </li>
             <li>
               <Link to="/contact" className={`hover:text-yuca-media-light transition-colors ${location.pathname === '/contact' ? 'font-bold' : ''}`}>

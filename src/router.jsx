@@ -62,6 +62,10 @@ const router = createBrowserRouter([
     element: <StudioLandingRedirect />,
   },
   {
+    path: '/yuca-studios',
+    element: <StudioLandingRedirect />,
+  },
+  {
     path: '/studios',
     element: <StudioHome />,
   },

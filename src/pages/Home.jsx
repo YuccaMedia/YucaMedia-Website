@@ -8,26 +8,6 @@ const Home = () => {
     <>
       <Hero />
       
-      {/* Creator Dashboard CTA */}
-      <section className="py-16 bg-yuca-media-bg-light">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-yuca-media-dark mb-4 text-center">Creator Dashboard</h2>
-          <p className="text-center text-lg mb-8 max-w-3xl mx-auto">
-            Our Creator Dashboard has moved to Yuca Studios. Access all your projects, CryptoLottery, 
-            and earnings information in one place, with a new enhanced creator-focused experience.
-          </p>
-          <div className="flex justify-center">
-            <Link 
-              to="/studios/dashboard" 
-              className="bg-yuca-media-dark text-white px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all text-lg inline-block"
-              aria-label="Go to Creator Dashboard"
-            >
-              Access Creator Dashboard
-            </Link>
-          </div>
-        </div>
-      </section>
-      
       {/* About Section */}
       <section id="about" className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -68,6 +48,9 @@ const Home = () => {
               <p className="text-gray-700 mb-4">
                 Community-driven production studio for film, music videos, and creative content.
               </p>
+              <Link to="/yuca-studios" className="text-yuca-media-dark hover:underline font-medium">
+                Visit Yuca Studios →
+              </Link>
             </div>
           </div>
         </div>
