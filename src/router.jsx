@@ -5,6 +5,8 @@ import Contact from './pages/Contact';
 import Services from './pages/Services';
 import Layout from './components/Layout';
 import ErrorPage from './pages/ErrorPage';
+import StudioHome from './yuca-studios/pages/StudioHome';
+import CreatorDashboard from './yuca-studios/pages/CreatorDashboard';
 
 // Create router with routes
 // Note: In React Router v7, the previous future flags are now the default behavior
@@ -54,15 +56,36 @@ const router = createBrowserRouter([
     path: '/landing',
     element: <LandingPageRedirect />,
   },
+  // Yuca Studios routes
+  {
+    path: '/studios-landing',
+    element: <StudioLandingRedirect />,
+  },
+  {
+    path: '/studios',
+    element: <StudioHome />,
+  },
+  {
+    path: '/studios/dashboard',
+    element: <CreatorDashboard />,
+  },
 ]);
 
-// Simple component to redirect to the standalone landing.html page
+// Redirect components for standalone HTML pages
 function LandingPageRedirect() {
   React.useEffect(() => {
     window.location.href = '/landing.html';
   }, []);
   
   return <div className="loading">Redirecting to landing page...</div>;
+}
+
+function StudioLandingRedirect() {
+  React.useEffect(() => {
+    window.location.href = '/yuca-studios/landing.html';
+  }, []);
+  
+  return <div className="loading">Redirecting to Yuca Studios landing page...</div>;
 }
 
 // Router provider component
