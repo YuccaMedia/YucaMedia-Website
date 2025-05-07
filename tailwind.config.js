@@ -6,6 +6,15 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        'yuca': {
+          'green': '#1A4D2E',
+          'cream': '#F5F0E1',
+          'green-light': '#2A6D3E',
+          'green-dark': '#143D24',
+          'cream-dark': '#E5D0C1'
+        }
+      },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },

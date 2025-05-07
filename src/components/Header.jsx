@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/globals.css'; 
+import WalletConnect from './WalletConnect';
 
 const Header = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/home' || location.pathname === '/home/';
 
   return (
-    <header className="bg-[#1a2b21] text-white p-4 shadow-md">
+    <header className="bg-yuca-green text-yuca-cream p-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Link to="/home">
@@ -30,49 +31,44 @@ const Header = () => {
           <ul className="flex space-x-6">
             <li>
               {isHomePage ? (
-                <a href="#about" className="hover:text-[#c2c8c4] transition-colors">About</a>
+                <a href="#about" className="hover:text-yuca-cream-dark transition-colors">About</a>
               ) : (
-                <Link to="/home#about" className="hover:text-[#c2c8c4] transition-colors">About</Link>
+                <Link to="/home#about" className="hover:text-yuca-cream-dark transition-colors">About</Link>
               )}
             </li>
             <li>
-              <Link to="/landing" className="hover:text-[#c2c8c4] transition-colors">
+              <Link to="/landing" className="hover:text-yuca-cream-dark transition-colors">
                 Donate
               </Link>
             </li>
             <li>
-              <Link to="/services" className={`hover:text-[#c2c8c4] transition-colors ${location.pathname === '/services' ? 'font-bold' : ''}`}>
+              <Link to="/services" className={`hover:text-yuca-cream-dark transition-colors ${location.pathname === '/services' ? 'font-bold' : ''}`}>
                 Services
               </Link>
             </li>
             <li>
               {isHomePage ? (
-                <a href="#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</a>
+                <a href="#cryptolottery" className="hover:text-yuca-cream-dark transition-colors">CryptoLottery</a>
               ) : (
-                <Link to="/home#cryptolottery" className="hover:text-[#c2c8c4] transition-colors">CryptoLottery</Link>
+                <Link to="/home#cryptolottery" className="hover:text-yuca-cream-dark transition-colors">CryptoLottery</Link>
               )}
             </li>
             <li>
               {isHomePage ? (
-                <a href="#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</a>
+                <a href="#studios" className="hover:text-yuca-cream-dark transition-colors">Yuca Studios</a>
               ) : (
-                <Link to="/home#studios" className="hover:text-[#c2c8c4] transition-colors">Yuca Studios</Link>
+                <Link to="/home#studios" className="hover:text-yuca-cream-dark transition-colors">Yuca Studios</Link>
               )}
             </li>
             <li>
-              <Link to="/contact" className={`hover:text-[#c2c8c4] transition-colors ${location.pathname === '/contact' ? 'font-bold' : ''}`}>
+              <Link to="/contact" className={`hover:text-yuca-cream-dark transition-colors ${location.pathname === '/contact' ? 'font-bold' : ''}`}>
                 Contact
               </Link>
             </li>
           </ul>
         </nav>
         
-        <button 
-          className="bg-[#c2c8c4] text-[#1a2b21] px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition-all"
-          aria-label="Connect Wallet"
-        >
-          Connect Wallet
-        </button>
+        <WalletConnect variant="secondary" size="md" />
       </div>
     </header>
   );

@@ -5,9 +5,17 @@
 @tailwind utilities;
 
 :root {
+  /* Legacy color variables - kept for backward compatibility */
   --primary-dark: #1a2b21;
   --primary-light: #c2c8c4;
   --bg-light: #f5f8f6;
+  
+  /* New Yuca color palette */
+  --yuca-green: #1A4D2E;
+  --yuca-cream: #F5F0E1;
+  --yuca-green-light: #2A6D3E;
+  --yuca-green-dark: #143D24;
+  --yuca-cream-dark: #E5D0C1;
 }
 
 html {
@@ -76,10 +84,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-dark);
+  background: var(--yuca-green);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #253c2e;
+  background: var(--yuca-green-light);
 }
